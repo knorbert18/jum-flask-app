@@ -143,9 +143,12 @@ def verify_payment():
     
     return "Payment verification failed", 400
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:cAndy12$@dpg-ck0mhij6fquc73862au0-a.oregon-postgres.render.com:5432/JUMIA?sslmode=require'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
+
+from dotenv import load_dotenv
+load_dotenv()
 
 init_admin(app)
 
