@@ -171,8 +171,9 @@ conn = psycopg2.connect(
     dbname="JUMIA",
     user="postgres",
     password="cAndy12$",
-    host="localhost",
-    port="5432"
+    host="dpg-ck0mhij6fquc73862au0-a.oregon-postgres.render.com",
+    port="5432",
+    sslmode="require"
 )
 cur = conn.cursor()
 
