@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Ransbet - Cart</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+  <style>
+    .cart-count {
+      background: red;
+      color: white;
+      border-radius: 9999px;
+      padding: 0 6px;
+      font-size: 12px;
+      margin-left: 4px;
+      vertical-align: top;
+      min-width: 20px;
+      text-align: center;
+      line-height: 20px;
+      font-weight: 600;
+      user-select: none;
+    }
+
+    /* Slide in from left */
+    #sideNav {
+      transition: transform 0.3s ease-in-out;
+      transform: translateX(-100%);
+    }
+
+    #sideNav.open {
+      transform: translateX(0);
+    }
+  </style>
+</head>
+
+<body class="bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300 min-h-screen flex flex-col">
+  <header class="header bg-white dark:bg-gray-800 dark:text-gray-100 shadow p-4 flex justify-between items-center">
+    <a href="{{ url_for('index') }}" class="flex items-center space-x-2">
+      <img src="{{ url_for('static', filename='images/Ransbet-logo.jpg') }}" alt="Ransbet Logo" class="h-10 w-10 rounded-full border-2 border-red-500 shadow-md" />
+      <span class="text-xl font-bold text-gray-800 dark:text-white">Ransbet</span>
+    </a>
+
+    <!-- Search bar (for all screen sizes) -->
+    <div class="search flex items-center flex-grow max-w-md mx-4">
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search products, brands and categories"
+        class="flex-grow border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-l bg-white dark:bg-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
+      />
+      <button
+        id="searchButton"
+        class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-r focus:outline-none focus:ring-2 focus:ring-orange-500"
+      >
+        Search
+      </button>
+    </div>
+
+    <!-- Mobile menu toggle button -->
+    <button id="menuToggle" class="block lg:hidden text-gray-800 dark:text-gray-100">
+      <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Desktop Navigation (visible only on large screens) -->
+    <nav class="hidden lg:flex items-center gap-4 text-gray-700 dark:text-gray-300 text-sm">
+      <a href="{{ url_for('index') }}" class="hover:text-orange-500 flex items-center gap-1">
+        <i class="fas fa-home"></i> Home
+      </a>
+
+      <a href="{{ url_for('orders') }}" class="hover:text-orange-500 flex items-center gap-1">
+        <i class="fas fa-box"></i> Orders
+      </a>
+
+      <a href="#wishlist" class="hover:text-orange-500 flex items-center gap-1">
+        <i class="fas fa-heart"></i> Wish List
+      </a>
+
+      <!-- Account Dropdown (only visible on Desktop) -->
+      <div class="relative">
+ <a href="{{ url_for('account') }}" class="flex items-center gap-1 hover:text-orange-500">
+  <i class="fas fa-cog"></i> Account
+</a>
+  <div id="accountDropdown" class="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-100 shadow-lg rounded-md hidden">
+    <a href="{{ url_for('orders') }}" class="block px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Orders</a>
+    <a href="#wishlist" class="block px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Wish List</a>
+    <a href="#addresses" class="block px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Addresses</a>
+    <a href="#payments" class="block px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Payment Methods</a>
+  </div>
+</div>
+
+
+      <a href="#" class="hover:text-orange-500">Help</a>
+
+      <a href="{{ url_for('cart') }}" class="relative flex items-center hover:text-orange-500">
+        <i class="fas fa-shopping-cart"></i> Cart
+        <span class="cart-count" id="cartCount">0</span>
+      </a>
+
+      <button
+        id="darkModeToggle"
+        class="ml-2 px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-orange-500 flex items-center gap-2"
+      >
+        <i class="fas fa-moon"></i> Dark Mode
+      </button>
+    </nav>
+  </header>
+
+  <!-- Side Navigation (for mobile and tablet) -->
+  <nav id="sideNav" class="lg:hidden fixed inset-0 bg-gray-800 bg-opacity-75 z-40 transform translate-x-full transition-transform duration-300 w-1/2">
+    <div class="flex justify-end p-4">
+      <button id="closeSideNav" class="text-white">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="flex flex-col items-center text-white">
+      <a href="{{ url_for('index') }}" class="py-4 text-lg hover:text-orange-500">Home</a>
+
+      <!-- Account items listed directly in mobile -->
+      <a href="{{ url_for('orders') }}" class="py-4 text-lg hover:text-orange-500">Orders</a>
+      <a href="#wishlist" class="py-4 text-lg hover:text-orange-500">Wish List</a>
+      <a href="{{ url_for('account') }}" class="py-4 text-lg hover:text-orange-500">Account Settings</a>
+      <a href="#addresses" class="py-4 text-lg hover:text-orange-500">Addresses</a>
+      <a href="#payments" class="py-4 text-lg hover:text-orange-500">Payment Methods</a>
+
+      <a href="#" class="py-4 text-lg hover:text-orange-500">Help</a>
+      <a href="{{ url_for('cart') }}" class="relative py-4 text-lg hover:text-orange-500">Cart
+        <span class="cart-count" id="cartCountMobile">0</span>
+      </a>
+      <button id="darkModeToggleMobile" class="py-4 text-lg flex items-center gap-2 hover:text-orange-500">
+        <i class="fas fa-moon"></i> Dark Mode
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-cart flex-grow bg-gray-50 dark:bg-gray-900 py-8">
+    <div class="cart-container max-w-4xl mx-auto px-4">
+      <div class="cart-empty text-center text-gray-600 dark:text-gray-400" id="cartEmptyMessage">
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/1170/1170678.png"
+          alt="Empty Cart"
+          width="100"
+          class="mx-auto mb-4"
+        />
+        <h2 class="text-2xl font-semibold mb-2">Your cart is empty!</h2>
+        <p class="mb-4">Browse our categories and discover our best deals!</p>
+        <a href="{{ url_for('index') }}">
+          <button class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded focus:outline-none focus:ring-2 focus:ring-orange-500">
+            Start Shopping
+          </button>
+        </a>
+      </div>
+
+      <div class="cart-items hidden" id="cartItemsContainer">
+        <div class="flex flex-col lg:flex-row gap-6">
+          <!-- Cart Items List -->
+          <ul id="cartItemsList" class="flex-1 space-y-4"></ul>
+
+          <!-- Cart Summary -->
+          <div
+            id="cartSummary"
+            class="w-full lg:w-1/3 bg-white dark:bg-gray-800 p-6 rounded shadow text-gray-900 dark:text-gray-100"
+          >
+            <h3 class="text-lg font-semibold mb-3">Cart Summary</h3>
+            <div id="cartTotalPrice" class="text-xl font-bold mb-4">Total: GH₵0.00</div>
+            <button
+              type="button"
+              class="checkout-btn bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+              onclick="handleCheckout()"
+            >
+              Checkout
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 text-white text-2xl flex justify-center items-center z-50 hidden">
+    <div class="message">Processing your order...</div>
+  </div>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const htmlEl = document.documentElement;
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const darkModeToggleMobile = document.getElementById('darkModeToggleMobile');
+    const menuToggle = document.getElementById('menuToggle');
+    const sideNav = document.getElementById('sideNav');
+    const closeSideNav = document.getElementById('closeSideNav');
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    const cartCountEl = document.getElementById('cartCount');
+    const cartCountElMobile = document.getElementById('cartCountMobile');
+    const accountDropdown = document.querySelector('.account-dropdown');
+
+    // ✅ FIX: Always get latest cartItems from localStorage
+    function updateCartCount() {
+      const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+      let cartCount = 0;
+      for (const item of cartItems) {
+        cartCount += item.quantity || 1; // Default to 1 if missing
+      }
+      cartCountEl.innerText = cartCount;
+      cartCountElMobile.innerText = cartCount;
+    }
+
+    // Theme persistence
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        htmlEl.classList.add('dark');
+        darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+        darkModeToggleMobile.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+      } else {
+        htmlEl.classList.remove('dark');
+        darkModeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+        darkModeToggleMobile.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+      }
+      localStorage.setItem('theme', theme);
+    }
+
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      applyTheme('dark');
+    } else {
+      applyTheme('light');
+    }
+
+    darkModeToggle.addEventListener('click', () => {
+      const currentTheme = htmlEl.classList.contains('dark') ? 'dark' : 'light';
+      applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    });
+
+    darkModeToggleMobile.addEventListener('click', () => {
+      const currentTheme = htmlEl.classList.contains('dark') ? 'dark' : 'light';
+      applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    });
+
+    // Mobile menu toggle
+    menuToggle.addEventListener('click', () => {
+      sideNav.classList.add('open');
+    });
+
+    closeSideNav.addEventListener('click', () => {
+      sideNav.classList.remove('open');
+    });
+
+    // Account dropdown toggle
+    const accountToggle = document.getElementById('accountToggle'); // Make sure your button has this ID
+
+if (accountToggle && accountDropdown) {
+  accountToggle.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent it from triggering document click
+    accountDropdown.classList.toggle('hidden');
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!accountToggle.contains(e.target) && !accountDropdown.contains(e.target)) {
+      accountDropdown.classList.add('hidden');
+    }
+  });
+}
+
+
+    // Search functionality
+    searchButton.addEventListener('click', () => {
+      const query = searchInput.value.trim();
+      if (query) {
+        console.log('Searching for:', query);
+        // Add your search logic here
+      }
+    });
+
+    // ✅ Update count on load
+    updateCartCount();
+
+    // ✅ Also update count on storage change (if multiple tabs)
+    window.addEventListener('storage', updateCartCount);
+  });
+
+  function handleCheckout() {
+    const overlay = document.getElementById('loadingOverlay');
+    overlay.classList.remove('hidden'); // Show overlay
+    setTimeout(() => {
+      window.location.href = "{{ url_for('checkout') }}";
+    }, 1500);
+  }
+</script>
+
+  <script src="{{ url_for('static', filename='cart.js') }}"></script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+  <script src="{{ url_for('static', filename='language.js') }}"></script>
+</body>
+
+</html>

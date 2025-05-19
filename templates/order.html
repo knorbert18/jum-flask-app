@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+  <meta charset="UTF-8">
+  <title>Ransbet - Order Confirmation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' };
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white transition duration-300">
+
+<!-- Navigation Header -->
+<nav class="bg-white dark:bg-gray-800 shadow-md">
+  <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+    <a href="{{ url_for('index') }}" class="flex items-center space-x-2">
+      <img src="{{ url_for('static', filename='images/Ransbet-logo.jpg') }}" alt="Ransbet Logo" class="h-10 w-10 rounded-full border-2 border-red-500 shadow-md" />
+      <span class="text-xl font-bold text-gray-800 dark:text-white">Ransbet</span>
+    </a>
+    <div class="space-x-4 flex items-center">
+      <a href="{{ url_for('index') }}" class="text-gray-700 dark:text-gray-200 hover:text-orange-500">Home</a>
+      <a href="{{ url_for('cart') }}" class="text-gray-700 dark:text-gray-200 hover:text-orange-500">
+        <i class="fas fa-shopping-cart"></i>
+      </a>
+      <a href="{{ url_for('checkout') }}" class="text-orange-500 font-semibold">Checkout</a>
+      <button id="darkModeToggle" class="ml-4 px-3 py-1 border rounded text-sm text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-orange-100 dark:hover:bg-gray-700">
+        <i class="fas fa-moon"></i> Dark Mode
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- Confirmation Content -->
+<div class="max-w-2xl mx-auto p-6 mt-10 bg-white dark:bg-gray-800 rounded-xl shadow-lg text-center">
+  {% if order %}
+    <div class="mb-6">
+      <div class="text-green-500 text-6xl mb-4 animate-bounce">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <h2 class="text-3xl font-semibold">Thank You!</h2>
+      <p class="mt-2 text-lg">Your order has been placed successfully.</p>
+    </div>
+
+    <!-- Order Info -->
+    <div class="text-left space-y-4 text-base">
+      <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+        <h3 class="text-lg font-semibold mb-1">Order Information</h3>
+        <p><strong>Order ID:</strong> {{ order['order_id'] }}</p>
+        <p><strong>Order Date:</strong> {{ order['order_date'].strftime('%B %d, %Y') }}</p>
+        <p><strong>Customer Name:</strong> {{ order['username'] }}</p>
+      </div>
+
+      <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+        <h3 class="text-lg font-semibold mb-1">Shipping Status</h3>
+        <p><strong>Status:</strong> {{ order['shipping_status'] }}</p>
+      </div>
+
+      <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-lg">
+        <h3 class="text-lg font-semibold mb-1">Delivery Details</h3>
+        <p><strong>Expected Delivery Date:</strong> {{ order['delivery_date'].strftime('%B %d, %Y') }}</p>
+        <p><strong>Status:</strong> {{ order['delivery_status'] }}</p>
+      </div>
+    </div>
+
+    <a href="{{ url_for('orders') }}" class="block mt-6 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg w-full text-center">View Orders</a>
+
+  {% else %}
+    <div class="mb-6">
+      <h2 class="text-3xl font-semibold">Order Not Found</h2>
+      <p class="text-red-500 mt-2">Sorry, we could not find your order. It may have been canceled or does not exist.</p>
+    </div>
+    <a href="{{ url_for('orders') }}" class="block mt-6 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-6 rounded-lg w-full text-center">Back to Orders</a>
+  {% endif %}
+</div>
+
+<!-- Dark Mode & Cart Clear Script -->
+<script>
+  const htmlEl = document.documentElement;
+  const darkModeToggle = document.getElementById('darkModeToggle');
+
+  function applyTheme(theme) {
+    if (theme === 'dark') {
+      htmlEl.classList.add('dark');
+      darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+    } else {
+      htmlEl.classList.remove('dark');
+      darkModeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+    }
+    localStorage.setItem('theme', theme);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+
+    darkModeToggle.addEventListener('click', () => {
+      const current = htmlEl.classList.contains('dark') ? 'dark' : 'light';
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    });
+
+    // Clear cart and shipping info
+    localStorage.removeItem('cart');
+    localStorage.removeItem('shipping');
+  });
+</script>
+
+</body>
+</html>

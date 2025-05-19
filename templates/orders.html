@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en" class="transition duration-300">
+<head>
+  <meta charset="UTF-8">
+  <title>Orders - Ransbet</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"> <!-- FontAwesome CDN -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    }
+  </script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+
+  <!-- Header -->
+  <header class="bg-white dark:bg-gray-800 shadow-md p-4 flex justify-between items-center">
+    <a href="{{ url_for('index') }}" class="flex items-center space-x-3">
+      <img src="{{ url_for('static', filename='images/Ransbet-logo.jpg') }}" alt="Ransbet Logo" class="h-12 w-12 rounded-full border-2 border-red-500 shadow-md" />
+      <span class="text-2xl font-bold text-gray-800 dark:text-white tracking-tight">Ransbet</span>
+    </a>
+
+    <!-- Mobile Menu Button (Hamburger) -->
+    <button id="menuButton" class="sm:hidden text-gray-700 dark:text-gray-200 hover:text-orange-500 transition duration-300 ease-in-out">
+      <i class="fas fa-bars fa-lg"></i>
+    </button>
+
+    <!-- Navigation Links (Visible on larger screens) -->
+    <nav class="hidden sm:flex items-center space-x-6 text-sm sm:text-base">
+      <!-- Home Link with Icon -->
+      <a href="{{ url_for('index') }}" class="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-orange-500 transition duration-300 ease-in-out">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </a>
+
+      <!-- Orders Link with Icon -->
+      <a href="{{ url_for('orders') }}" class="flex items-center space-x-2 text-gray-700 dark:text-gray-300 font-semibold hover:text-orange-500 underline transition duration-300 ease-in-out">
+        <i class="fas fa-box"></i>
+        <span>Orders</span>
+      </a>
+
+      <!-- Cart Link with Icon -->
+      <a href="{{ url_for('cart') }}" class="flex items-center space-x-2 text-gray-700 dark:text-gray-300 hover:text-orange-500 transition duration-300 ease-in-out">
+        <i class="fas fa-shopping-cart"></i>
+        <span>Cart</span>
+      </a>
+
+      <!-- Logout Link with Icon -->
+      <a href="{{ url_for('logout') }}" class="flex items-center space-x-2 text-red-500 hover:text-red-600 transition duration-300 ease-in-out">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+      </a>
+
+      <!-- Theme Toggle -->
+      <button id="themeToggle" class="ml-3 focus:outline-none">
+        <svg id="sunIcon" class="w-6 h-6 text-yellow-500 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M12 3v2m0 14v2m9-9h2m-18 0H3m16.24 7.76l-1.42-1.42M6.34 6.34 4.93 4.93m12.02 0-1.42 1.41M6.34 17.66l-1.41 1.42M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+        </svg>
+        <svg id="moonIcon" class="w-6 h-6 text-gray-200 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Sidebar Menu (Hidden by default) -->
+  <div id="sidebar" class="fixed inset-0 bg-gray-800 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out sm:hidden w-1/2">
+    <div class="flex flex-col items-start p-6 text-white">
+      <button id="closeMenu" class="mb-4 text-white text-3xl self-end">
+        <i class="fas fa-times"></i>
+      </button>
+
+      <!-- Home Link with Icon -->
+      <a href="{{ url_for('index') }}" class="flex items-center space-x-2 py-3 hover:text-orange-500 transition duration-300 ease-in-out">
+        <i class="fas fa-home"></i>
+        <span>Home</span>
+      </a>
+
+      <!-- Orders Link with Icon -->
+      <a href="{{ url_for('orders') }}" class="flex items-center space-x-2 py-3 hover:text-orange-500 transition duration-300 ease-in-out">
+        <i class="fas fa-box"></i>
+        <span>Orders</span>
+      </a>
+
+      <!-- Cart Link with Icon -->
+      <a href="{{ url_for('cart') }}" class="flex items-center space-x-2 py-3 hover:text-orange-500 transition duration-300 ease-in-out">
+        <i class="fas fa-shopping-cart"></i>
+        <span>Cart</span>
+      </a>
+
+      <!-- Logout Link with Icon -->
+      <a href="{{ url_for('logout') }}" class="flex items-center space-x-2 py-3 hover:text-red-600 transition duration-300 ease-in-out">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="p-6 max-w-6xl mx-auto">
+    <h2 class="text-3xl font-semibold mb-6">Your Orders</h2>
+
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+      {% if orders %}
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {% for order in orders %}
+            <div class="order-card bg-gray-100 dark:bg-gray-700 rounded-lg shadow-lg p-4">
+              <a href="{{ url_for('order_details', order_id=order[0]) }}"
+                 class="block text-xl font-semibold hover:text-orange-500">
+                Order #{{ order[0] }}
+              </a>
+              <p class="text-gray-600 dark:text-gray-300 mt-1">Date: {{ order[1] }}</p>
+              <p class="text-gray-600 dark:text-gray-300">User: {{ order[2] }}</p>
+              <div class="mt-4">
+                <a href="{{ url_for('order_details', order_id=order[0]) }}"
+                   class="text-blue-500 hover:text-blue-700 dark:text-blue-400 font-semibold">View Details</a>
+              </div>
+              <div class="mt-4">
+                <form action="{{ url_for('cancel_order', order_id=order[0]) }}" method="POST">
+                  <button type="submit"
+                          class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300 ease-in-out">
+                    Cancel Order
+                  </button>
+                </form>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-center text-gray-500 dark:text-gray-300 text-lg">You do not have any orders yet.</p>
+      {% endif %}
+    </div>
+  </main>
+
+  <script>
+    const html = document.documentElement;
+    const toggle = document.getElementById('themeToggle');
+    const sunIcon = document.getElementById('sunIcon');
+    const moonIcon = document.getElementById('moonIcon');
+    const menuButton = document.getElementById('menuButton');
+    const sidebar = document.getElementById('sidebar');
+    const closeMenu = document.getElementById('closeMenu');
+
+    function setTheme(mode) {
+      if (mode === 'dark') {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+        sunIcon.classList.remove('hidden');
+        moonIcon.classList.add('hidden');
+      } else {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+        sunIcon.classList.add('hidden');
+        moonIcon.classList.remove('hidden');
+      }
+    }
+
+    // Load theme from localStorage
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setTheme(savedTheme);
+
+    toggle.addEventListener('click', () => {
+      const newTheme = html.classList.contains('dark') ? 'light' : 'dark';
+      setTheme(newTheme);
+    });
+
+    // Mobile menu toggle (Sidebar)
+    menuButton.addEventListener('click', () => {
+      sidebar.classList.remove('-translate-x-full'); // Slide in the sidebar
+    });
+
+    // Close the sidebar
+    closeMenu.addEventListener('click', () => {
+      sidebar.classList.add('-translate-x-full'); // Slide out the sidebar
+    });
+  </script>
+
+</body>
+</html>

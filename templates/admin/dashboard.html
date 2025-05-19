@@ -1,0 +1,37 @@
+{% extends 'admin/master.html' %}
+{% block body %}
+<div class="row">
+  <div class="col-md-3">
+    <div class="card bg-primary text-white mb-3">
+      <div class="card-body">
+        <h4>Total Orders</h4>
+        <p class="display-6">{{ total_orders }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-success text-white mb-3">
+      <div class="card-body">
+        <h4>Total Users</h4>
+        <p class="display-6">{{ total_users }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-warning text-white mb-3">
+      <div class="card-body">
+        <h4>Total Products</h4>
+        <p class="display-6">{{ total_products }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card bg-danger text-white mb-3">
+      <div class="card-body">
+        <h4>Total Revenue</h4>
+        <p class="display-6">${{ '%.2f'|format(revenue) }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

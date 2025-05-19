@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ransbet - Checkout</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script> tailwind.config = { darkMode: 'class' }; </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    /* Your existing styles */
+    #confirmOrderBtn {
+      width: 100%;
+      padding: 16px;
+      background-color: #f97316;
+      color: white;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.125rem;
+      cursor: pointer;
+      transition: background-color 0.3s, box-shadow 0.3s;
+    }
+    #confirmOrderBtn:hover { background-color: #ea580c; }
+    #confirmOrderBtn:focus { outline: none; box-shadow: 0 0 0 4px rgba(255, 159, 31, 0.4); }
+    #confirmOrderBtn:active { box-shadow: 0 0 0 6px rgba(255, 159, 31, 0.6); }
+    .cart-count {
+      background: red;
+      color: white;
+      border-radius: 9999px;
+      padding: 0 6px;
+      font-size: 12px;
+      margin-left: 4px;
+      vertical-align: top;
+      min-width: 20px;
+      text-align: center;
+      line-height: 20px;
+      font-weight: 600;
+      user-select: none;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white transition-colors duration-300">
+
+<nav class="bg-white dark:bg-gray-800 shadow-md">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="{{ url_for('index') }}" class="flex items-center space-x-2">
+      <img src="{{ url_for('static', filename='images/Ransbet-logo.jpg') }}" alt="Ransbet Logo" class="h-10 w-10 rounded-full border-2 border-red-500 shadow-md" />
+      <span class="text-xl font-bold text-gray-800 dark:text-white">Ransbet</span>
+    </a>
+    <div class="flex items-center space-x-6">
+      <a href="{{ url_for('index') }}" class="text-gray-700 dark:text-gray-200 hover:text-orange-500">Home</a>
+      <a href="{{ url_for('cart') }}" class="relative flex items-center text-gray-700 dark:text-gray-200 hover:text-orange-500">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count">0</span>
+      </a>
+      <a href="{{ url_for('checkout') }}" class="text-orange-500 font-semibold">Checkout</a>
+      <button id="darkModeToggle" class="ml-2 px-3 py-1 border rounded text-sm text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-orange-100 dark:hover:bg-gray-700">
+        <i class="fas fa-moon"></i> Dark Mode
+      </button>
+    </div>
+  </div>
+</nav>
+
+<div class="max-w-4xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md mt-10">
+  <h1 class="text-3xl font-semibold text-center mb-8">Checkout</h1>
+
+  <div id="checkoutCartItems" class="mb-6"></div>
+
+  <div class="text-lg font-semibold text-right mb-4">
+    Total: <span id="cartTotal">GHC 0.00</span>
+  </div>
+
+  <form id="checkoutForm" method="POST" action="{{ url_for('payment') }}">
+    <!-- Hidden input for total -->
+    <input type="hidden" name="total_price" id="totalPriceInput" value="">
+
+    <!-- Shipping Info -->
+    <div>
+      <h2 class="text-xl font-semibold">Shipping Information</h2>
+      <div class="space-y-4">
+        <input type="text" name="shipping_name" placeholder="Full Name" class="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" required />
+        <input type="text" name="shipping_phone" placeholder="Phone Number" class="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" required />
+        <input type="text" name="shipping_address" placeholder="Street Address" class="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" required />
+        <select id="regionSelect" name="shipping_region" class="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+          <option value="">Select Region</option>
+        </select>
+        <select id="districtSelect" name="shipping_district" class="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+          <option value="">Select District</option>
+        </select>
+        <select id="townSelect" name="shipping_town" class="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+          <option value="">Select Town</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="mt-4">
+      <select id="paymentMethod" name="payment_method" class="w-full p-3 border rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white" required>
+        <option value="">Select Payment Method</option>
+        <option value="Mobile Money">Mobile Money</option>
+        <option value="Card Payment">Card Payment</option>
+      </select>
+    </div>
+
+    <div class="mt-6">
+      <button type="submit" id="confirmOrderBtn">Confirm Order</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  // Dark mode toggle and cart count code here (unchanged, your existing code)
+  const htmlEl = document.documentElement;
+  const darkModeToggle = document.getElementById('darkModeToggle');
+  function applyTheme(theme) {
+    if (theme === 'dark') {
+      htmlEl.classList.add('dark');
+      darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+    } else {
+      htmlEl.classList.remove('dark');
+      darkModeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+    }
+    localStorage.setItem('theme', theme);
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      applyTheme('dark');
+    } else {
+      applyTheme('light');
+    }
+    darkModeToggle.addEventListener('click', () => {
+      const currentTheme = htmlEl.classList.contains('dark') ? 'dark' : 'light';
+      applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    });
+    function updateCartCount() {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const count = cart.reduce((total, item) => total + (item.quantity || 1), 0);
+      document.querySelector('.cart-count').innerText = count;
+    }
+    updateCartCount();
+    document.addEventListener('cartUpdated', updateCartCount);
+  });
+</script>
+
+<script src="{{ url_for('static', filename='checkout.js') }}"></script>
+<script src="{{ url_for('static', filename='gh_towns.js') }}"></script>
+
+</body>
+</html>

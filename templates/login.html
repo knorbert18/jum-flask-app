@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login | Ransbet</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white transition duration-300">
+
+<!-- Dark Mode Toggle -->
+<div class="absolute top-4 right-4 z-10">
+  <button id="darkModeToggle" class="px-3 py-1 border rounded text-sm text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-orange-100 dark:hover:bg-gray-700">
+    <i class="fas fa-moon"></i> Dark Mode
+  </button>
+</div>
+
+<!-- Login Card -->
+<div class="flex items-center justify-center min-h-screen">
+  <div class="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md space-y-6">
+    
+    <!-- Ransbet Logo -->
+    <!-- Ransbet Circular Logo -->
+<div class="flex justify-center">
+ <img src="{{ url_for('static', filename='images/Ransbet-logo.jpg') }}" alt="Ransbet Logo" class="h-10 w-10 rounded-full border-2 border-red-500 shadow-md" />
+</div>
+
+
+    <h2 class="text-2xl font-bold text-center" id="formTitle">Login to Ransbet</h2>
+
+    <form id="authForm" class="space-y-4">
+      <div id="usernameField" class="hidden">
+        <label class="block mb-1 font-semibold">Username</label>
+        <input type="text" id="username" name="username" class="w-full border border-gray-300 dark:border-gray-600 p-2 rounded bg-white dark:bg-gray-700 text-black dark:text-white" placeholder="Enter your username">
+      </div>
+
+      <div>
+        <label class="block mb-1 font-semibold">Email</label>
+        <input type="email" id="email" name="email" class="w-full border border-gray-300 dark:border-gray-600 p-2 rounded bg-white dark:bg-gray-700 text-black dark:text-white" placeholder="Enter your email" required>
+      </div>
+
+      <div>
+        <label class="block mb-1 font-semibold">Password</label>
+        <input type="password" id="password" name="password" class="w-full border border-gray-300 dark:border-gray-600 p-2 rounded bg-white dark:bg-gray-700 text-black dark:text-white" placeholder="Enter your password" required>
+      </div>
+
+      <div class="flex justify-between items-center">
+        <label class="flex items-center text-sm">
+          <input type="checkbox" class="mr-2" id="rememberMe"> Remember me
+        </label>
+      </div>
+
+      <button type="submit" class="w-full bg-orange-500 hover:bg-orange-600 text-white p-2 rounded font-semibold">Submit</button>
+    </form>
+
+    <div class="text-right">
+      <a href="{{ url_for('forgot_password') }}" class="text-sm text-orange-500 hover:underline">Forgot password?</a>
+    </div>
+
+    <p class="text-center">
+      <span id="toggleText">Don't have an account?</span> 
+      <button id="toggleBtn" class="text-orange-500 font-bold hover:underline">Sign up</button>
+    </p>
+  </div>
+</div>
+
+<script>
+  const htmlEl = document.documentElement;
+  const darkModeToggle = document.getElementById('darkModeToggle');
+
+  function applyTheme(theme) {
+    if (theme === 'dark') {
+      htmlEl.classList.add('dark');
+      darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+    } else {
+      htmlEl.classList.remove('dark');
+      darkModeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+    }
+    localStorage.setItem('theme', theme);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+
+    darkModeToggle.addEventListener('click', () => {
+      const current = htmlEl.classList.contains('dark') ? 'dark' : 'light';
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    });
+  });
+
+  // Form Toggle Logic
+  const toggleBtn = document.getElementById('toggleBtn');
+  const formTitle = document.getElementById('formTitle');
+  const toggleText = document.getElementById('toggleText');
+  const usernameField = document.getElementById('usernameField');
+  let isLogin = true;
+
+  toggleBtn.addEventListener('click', () => {
+    isLogin = !isLogin;
+    if (isLogin) {
+      formTitle.textContent = 'Login to Ransbet';
+      toggleText.textContent = "Don't have an account?";
+      toggleBtn.textContent = "Sign up";
+      usernameField.classList.add('hidden');
+    } else {
+      formTitle.textContent = 'Create an Account';
+      toggleText.textContent = "Already have an account?";
+      toggleBtn.textContent = "Login";
+      usernameField.classList.remove('hidden');
+    }
+  });
+
+  // Auth Submission
+  document.getElementById('authForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const username = document.getElementById('username')?.value.trim();
+    const rememberMe = document.getElementById('rememberMe').checked;
+
+    if (!email || !password || (!isLogin && !username)) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing fields!',
+        text: 'Please fill out all fields.'
+      });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('password', password);
+    if (!isLogin) formData.append('username', username);
+    if (rememberMe) formData.append('remember', 'true');
+
+    const endpoint = isLogin ? '/login' : '/signup';
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Success!',
+          text: result.message,
+          timer: 2000,
+          showConfirmButton: false
+        });
+
+        if (isLogin) {
+          setTimeout(() => {
+            window.location.href = '/index';
+          }, 2000);
+        }
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: result.message
+        });
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'An error occurred',
+        text: 'Please try again.'
+      });
+    }
+  });
+</script>
+
+</body>
+</html>
