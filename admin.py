@@ -3,8 +3,8 @@ from flask_admin import Admin, BaseView, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user
 from markupsafe import Markup, escape
-from wtforms.fields import SelectField
 from werkzeug.security import generate_password_hash
+from wtforms.fields import SelectField
 from flask_admin.contrib.sqla.filters import FilterEqual, FilterLike, FilterGreater, FilterSmaller
 
 from models import db, User, Product, Order
@@ -84,33 +84,6 @@ class OrderAdmin(SecureModelView):
         'status_badge': _status_badge
     }
 
-# admin.py
-from flask_admin import Admin
-from flask_admin.contrib.sqla import ModelView
-from models import User, Product, Order, db
-
-class DashboardView(ModelView):
-    # Customize your dashboard view here or extend as needed
-    pass
-
-class UserAdmin(ModelView):
-    # Customize user admin view here
-    pass
-
-class ProductAdmin(ModelView):
-    # Customize product admin view here
-    pass
-
-class OrderAdmin(ModelView):
-    # Customize order admin view here
-    pass
-
-def init_admin(app):
-    admin = Admin(app, name='My Admin Panel', template_mode='bootstrap4')
-    admin.add_view(DashboardView(User, db.session, name='Dashboard', endpoint='index'))
-    admin.add_view(UserAdmin(User, db.session))
-    admin.add_view(ProductAdmin(Product, db.session))
-    admin.add_view(OrderAdmin(Order, db.session))
 
 # ─────── Custom Dashboard View ─────── #
 class DashboardView(BaseView):
@@ -133,7 +106,8 @@ class DashboardView(BaseView):
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for('login', next=request.url))
 
-# ─────── Initialize Flask-Admin ─────── #
+
+# ─────── Initialize Admin Panel ─────── #
 def init_admin(app):
     admin = Admin(app, name='Ransbet Admin', template_mode='bootstrap4')
     admin.add_view(DashboardView(name='Dashboard', endpoint='dashboard'))
@@ -141,17 +115,4 @@ def init_admin(app):
     admin.add_view(ProductAdmin(Product, db.session))
     admin.add_view(OrderAdmin(Order, db.session))
 
-    with app.app_context():
-        default_admin = User.query.filter_by(username='admin').first()
-        if not default_admin:
-            new_admin = User(
-                username='admin',
-                email='admin@example.com',
-                password=generate_password_hash('1234'),
-                is_admin=True
-            )
-            db.session.add(new_admin)
-            db.session.commit()
-            print("✅ Default admin user created (username: admin, password: 1234)")
-        else:
-            print("ℹ️ Admin user already exists.")
+    # Don't create default admin here — move this to create_tables.py

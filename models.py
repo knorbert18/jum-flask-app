@@ -23,9 +23,22 @@ class User(db.Model, UserMixin):
     is_admin = db.Column(db.Boolean, default=False)
 
     orders = db.relationship('Order', backref='user', lazy=True)
+    settings = db.relationship('UserSettings', backref='user', uselist=False)
 
     def __repr__(self):
         return f"<User {self.username}>"
+
+class UserSettings(db.Model):
+    __tablename__ = 'user_settings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    language = db.Column(db.String(10), default='en')
+    dark_mode = db.Column(db.Boolean, default=False)
+    notifications_enabled = db.Column(db.Boolean, default=True)
+
+    def __repr__(self):
+        return f"<UserSettings UserID={self.user_id}>"
 
 class Product(db.Model):
     __tablename__ = 'products'
