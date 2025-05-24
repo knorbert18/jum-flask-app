@@ -4,7 +4,7 @@ import secrets
 import uuid
 from datetime import datetime, timedelta
 from io import BytesIO
-
+from flask_login import confirm_login
 import qrcode
 import requests
 from dotenv import load_dotenv
@@ -28,9 +28,15 @@ load_dotenv()
 app = Flask(__name__)
 
 # Configurations
-app.secret_key = os.getenv('SECRET_KEY', '2e1f58e873055c64455686eac64f65d5046b2f31c33633a4e45970a6ea91a63a')
+app.secret_key = os.getenv('SECRET_KEY', '6dca9fa83f8d8cab0a0aba4731048e1809e9a6bcc5161d40e6193ed479005b2d')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SECURE'] = True  # Ensures cookie only sent over HTTPS
+app.config['SESSION_COOKIE_HTTPONLY'] = True  # Prevents JS access to the cookie
+app.config['REMEMBER_COOKIE_SECURE'] = True  # If using `remember=True` with login_user()
+app.config['SESSION_PERMANENT'] = True
+app.permanent_session_lifetime = timedelta(days=30)
 
 # Mail config
 app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
@@ -106,6 +112,7 @@ def generate_reference():
 
 @app.before_request
 def enforce_login():
+    print(f"Request endpoint: {request.endpoint}, authenticated: {current_user.is_authenticated}")
     allowed_routes = ['home', 'login', 'signup', 'forgot_password', 'static']
     if request.endpoint and (request.endpoint.startswith('static') or request.endpoint in allowed_routes):
         return
@@ -135,11 +142,17 @@ def login():
 
     user = User.query.filter_by(email=email).first()
     if user and check_password_hash(user.password, password):
-        login_user(user)
+        login_user(user, remember=True, fresh=True)
+        confirm_login()
+        session.permanent = True
         print(f"User {user.username} logged in, session: {session}")
         return jsonify({'success': True, 'message': 'Login successful'}), 200
 
     return jsonify({'success': False, 'message': 'Invalid credentials.'}), 401
+
+@app.route('/check')
+def check():
+    return jsonify({'authenticated': current_user.is_authenticated})
 
 @app.route('/logout')
 @login_required
@@ -180,6 +193,7 @@ def signup():
 @login_required
 def index():
     user = db.session.get(User, current_user.id)
+    print(f"Accessing /index: user = {user}, is_admin = {getattr(user, 'is_admin', False)}")
     if not user:
         return redirect(url_for('login'))
     is_admin = getattr(user, 'is_admin', False)
