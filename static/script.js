@@ -57,128 +57,165 @@
   { id: 55, name: "Adidas Predator", price: 150, image: "static/images/adidas_predator.jpeg", category: "Sports" }
 ];
 
-    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+  async function seedProducts() {
+    try {
+      const response = await fetch('/api/products/seed', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productsData),
+      });
 
-    function formatPrice(price) {
-      return `GH₵${price.toFixed(2)}`;
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data.message); // e.g. "Products seeded successfully"
+      } else {
+        const error = await response.json();
+        console.error('Failed to seed products:', error.message || response.statusText);
+      }
+    } catch (err) {
+      console.error('Error seeding products:', err);
     }
+  }
 
-    function updateCartCount() {
+  // Call seedProducts only once, store flag in localStorage
+  if (!localStorage.getItem('productsSeeded')) {
+    seedProducts().then(() => {
+      localStorage.setItem('productsSeeded', 'true');
+    }).catch((err) => {
+      console.error('Seeding failed:', err);
+    });
+  }
+
+  function formatPrice(price) {
+    return `GH₵${price.toFixed(2)}`;
+  }
+
+  async function updateCartCount() {
+    try {
+      const res = await fetch('/api/cart/count');
+      const data = await res.json();
       const countEl = document.getElementById("cart-count");
-      if (countEl) {
-        countEl.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
-      }
+      if (countEl) countEl.textContent = data.count || 0;
+    } catch (err) {
+      console.error("Failed to fetch cart count:", err);
     }
+  }
 
-    function addToCart(id) {
-      const item = productsData.find(p => p.id === parseInt(id));
-      if (item) {
-        const cartItem = cart.find(ci => ci.id === item.id);
-        if (cartItem) {
-          cartItem.quantity += 1;
-        } else {
-          cart.push({ ...item, quantity: 1 });
-        }
-        localStorage.setItem("cart", JSON.stringify(cart));
+  async function addToCart(id) {
+    try {
+      const response = await fetch('/api/cart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: parseInt(id) }),
+      });
+
+      if (response.ok) {
         updateCartCount();
+      } else {
+        const error = await response.json();
+        alert("Failed to add item to cart: " + (error.message || "Unknown error"));
       }
+    } catch (err) {
+      console.error("Error adding to cart:", err);
+      alert("An error occurred while adding to cart.");
     }
+  }
 
-    function renderProducts(products) {
-      const productContainer = document.getElementById("productContainer");
-      if (!productContainer) return;
+  function renderProducts(products) {
+    const productContainer = document.getElementById("productContainer");
+    if (!productContainer) return;
 
-      productContainer.innerHTML = "";
-      products.forEach(product => {
-        const card = document.createElement('div');
-        card.className = `
-          bg-white dark:bg-gray-800 
-          text-gray-900 dark:text-gray-100 
-          rounded-lg shadow-md 
-          overflow-hidden 
-          flex flex-col
-          transition-transform transform hover:scale-105
-        `;
+    productContainer.innerHTML = "";
+    products.forEach(product => {
+      const card = document.createElement('div');
+      card.className = `
+        bg-white dark:bg-gray-800 
+        text-gray-900 dark:text-gray-100 
+        rounded-lg shadow-md 
+        overflow-hidden 
+        flex flex-col
+        transition-transform transform hover:scale-105
+      `;
 
-        card.innerHTML = `
-          <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover" />
-          <div class="p-4 flex flex-col flex-grow">
-            <h3 class="text-lg font-semibold mb-2">${product.name}</h3>
-            <p class="text-orange-500 font-bold text-xl mt-auto">${formatPrice(product.price)}</p>
-            <button class="mt-4 bg-orange-500 text-white py-2 rounded hover:bg-orange-600 transition add-to-cart-btn" data-id="${product.id}">
-              Add to Cart
-            </button>
-          </div>
-        `;
+      card.innerHTML = `
+        <img src="${product.image}" alt="${product.name}" class="w-full h-48 object-cover" />
+        <div class="p-4 flex flex-col flex-grow">
+          <h3 class="text-lg font-semibold mb-2">${product.name}</h3>
+          <p class="text-orange-500 font-bold text-xl mt-auto">${formatPrice(product.price)}</p>
+          <button class="mt-4 bg-orange-500 text-white py-2 rounded hover:bg-orange-600 transition add-to-cart-btn" data-id="${product.id}">
+            Add to Cart
+          </button>
+        </div>
+      `;
 
-        productContainer.appendChild(card);
+      productContainer.appendChild(card);
+    });
+
+    document.querySelectorAll('.add-to-cart-btn').forEach(button => {
+      button.addEventListener('click', e => {
+        const productId = e.target.getAttribute('data-id');
+        addToCart(productId);
       });
+    });
+  }
 
-      document.querySelectorAll('.add-to-cart-btn').forEach(button => {
-        button.addEventListener('click', e => {
-          const productId = e.target.getAttribute('data-id');
-          addToCart(productId);
-        });
-      });
-    }
+  function setupCategoryFilter() {
+    const dropdown = document.getElementById("categorySelect");
+    if (!dropdown) return;
 
-    function setupCategoryFilter() {
-      const dropdown = document.getElementById("categorySelect");
-      if (!dropdown) return;
+    dropdown.addEventListener("change", () => {
+      const category = dropdown.value;
+      if (category === "All") {
+        renderProducts(productsData);
+      } else {
+        const filtered = productsData.filter(p => p.category === category);
+        renderProducts(filtered);
+      }
+    });
+  }
 
-      dropdown.addEventListener("change", () => {
-        const category = dropdown.value;
-        if (category === "All") {
-          renderProducts(productsData);
-        } else {
-          const filtered = productsData.filter(p => p.category === category);
-          renderProducts(filtered);
-        }
-      });
-    }
+  function setupAccountDropdown() {
+    const btn = document.getElementById("accountDropdownBtn");
+    const dropdown = document.getElementById("accountDropdown");
+    if (!btn || !dropdown) return;
 
-    function setupAccountDropdown() {
-      const btn = document.getElementById("accountDropdownBtn");
-      const dropdown = document.getElementById("accountDropdown");
-      if (!btn || !dropdown) return;
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle("hidden");
+    });
 
-      btn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        dropdown.classList.toggle("hidden");
-      });
+    document.addEventListener("click", (e) => {
+      if (!dropdown.classList.contains("hidden") && !dropdown.contains(e.target) && e.target !== btn) {
+        dropdown.classList.add("hidden");
+      }
+    });
+  }
 
-      document.addEventListener("click", (e) => {
-        if (!dropdown.classList.contains("hidden") && !dropdown.contains(e.target) && e.target !== btn) {
-          dropdown.classList.add("hidden");
-        }
-      });
-    }
+  function searchProducts() {
+    const queryInput = document.getElementById("searchInput");
+    const query = queryInput?.value?.toLowerCase() || "";
+    localStorage.setItem("searchQuery", query);
+    const results = productsData.filter(p => p.name.toLowerCase().includes(query));
+    renderProducts(results);
+  }
 
-    function searchProducts() {
-      const queryInput = document.getElementById("searchInput");
-      const query = queryInput?.value?.toLowerCase() || "";
-      localStorage.setItem("searchQuery", query);
-      const results = productsData.filter(p => p.name.toLowerCase().includes(query));
-      renderProducts(results);
-    }
+  // Initial Load
+  const savedQuery = localStorage.getItem("searchQuery");
+  if (savedQuery) {
+    const input = document.getElementById("searchInput");
+    if (input) input.value = savedQuery;
+    const results = productsData.filter(p => p.name.toLowerCase().includes(savedQuery));
+    renderProducts(results);
+  } else {
+    renderProducts(productsData);
+  }
 
-    // Initial Load
-    const savedQuery = localStorage.getItem("searchQuery");
-    if (savedQuery) {
-      const input = document.getElementById("searchInput");
-      if (input) input.value = savedQuery;
-      const results = productsData.filter(p => p.name.toLowerCase().includes(savedQuery));
-      renderProducts(results);
-    } else {
-      renderProducts(productsData);
-    }
+  updateCartCount();
+  setupAccountDropdown();
+  setupCategoryFilter();
 
-    updateCartCount();
-    setupAccountDropdown();
-    setupCategoryFilter();
-
-    const searchInput = document.getElementById("searchInput");
-    if (searchInput) {
-      searchInput.addEventListener("input", searchProducts);
-    }
-  });
+  const searchInput = document.getElementById("searchInput");
+  if (searchInput) {
+    searchInput.addEventListener("input", searchProducts);
+  }
+});

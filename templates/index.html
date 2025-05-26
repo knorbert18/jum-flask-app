@@ -9,6 +9,43 @@
   <script>
     tailwind.config = { darkMode: 'class' };
   </script>
+  <style>
+  .shimmer {
+    position: relative;
+    overflow: hidden;
+    background-color: #e0e0e0;
+  }
+
+  .shimmer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150px;
+    width: 100px;
+    height: 100%;
+    background: linear-gradient(to right, transparent 0%, #f0f0f0 50%, transparent 100%);
+    animation: shimmer 1.5s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      left: -150px;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+
+  .fade-in {
+    opacity: 0;
+    transition: opacity 0.6s ease-in;
+  }
+
+  .fade-in.loaded {
+    opacity: 1;
+  }
+</style>
+
 </head>
 
 <body class="bg-gray-100 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
@@ -170,7 +207,6 @@
       applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
     });
 
-    // Account dropdown toggle
     function setupAccountDropdown() {
       const btn = document.getElementById("accountDropdownBtn");
       const dropdown = document.getElementById("accountDropdown");
@@ -190,7 +226,6 @@
       });
     }
 
-    // Sidebar slide animation
     function setupMobileSidebar() {
       const sidebar = document.getElementById("mobileSidebar");
       const openBtn = document.getElementById("mobileMenuBtn");
@@ -209,45 +244,102 @@
       });
 
       document.addEventListener("click", (e) => {
-        if (
-          !sidebar.contains(e.target) &&
-          !openBtn.contains(e.target)
-        ) {
+        if (!sidebar.contains(e.target) && !openBtn.contains(e.target)) {
           sidebar.classList.remove("translate-x-0");
           sidebar.classList.add("-translate-x-full");
         }
       });
     }
 
-  const mobileSearchBtn = document.getElementById('mobileSearchBtn');
-const mobileSearchForm = document.getElementById('mobileSearchForm');
+    const mobileSearchBtn = document.getElementById('mobileSearchBtn');
+    const mobileSearchForm = document.getElementById('mobileSearchForm');
 
-if (mobileSearchBtn && mobileSearchForm) {
-  mobileSearchBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (mobileSearchForm.classList.contains('hidden')) {
-      mobileSearchForm.classList.remove('hidden');
-      mobileSearchForm.classList.add('flex');
-    } else {
-      mobileSearchForm.classList.remove('flex');
-      mobileSearchForm.classList.add('hidden');
+    if (mobileSearchBtn && mobileSearchForm) {
+      mobileSearchBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (mobileSearchForm.classList.contains('hidden')) {
+          mobileSearchForm.classList.remove('hidden');
+          mobileSearchForm.classList.add('flex');
+        } else {
+          mobileSearchForm.classList.remove('flex');
+          mobileSearchForm.classList.add('hidden');
+        }
+      });
+
+      document.addEventListener('click', (e) => {
+        if (
+          !mobileSearchForm.contains(e.target) &&
+          !mobileSearchBtn.contains(e.target)
+        ) {
+          mobileSearchForm.classList.remove('flex');
+          mobileSearchForm.classList.add('hidden');
+        }
+      });
     }
-  });
 
-  document.addEventListener('click', (e) => {
-    if (
-      !mobileSearchForm.contains(e.target) &&
-      !mobileSearchBtn.contains(e.target)
-    ) {
-      mobileSearchForm.classList.remove('flex');
-      mobileSearchForm.classList.add('hidden');
+    // 🧩 Product rendering with shimmer effect
+    function renderProducts() {
+      const products = [
+        {
+          title: 'Wireless Headphones',
+          price: 120,
+          imageUrl: '/static/images/headphones.jpg'
+        },
+        {
+          title: 'Smart Watch',
+          price: 90,
+          imageUrl: '/static/images/smartwatch.jpg'
+        },
+        {
+          title: 'Gaming Mouse',
+          price: 45,
+          imageUrl: '/static/images/mouse.jpg'
+        },
+        {
+          title: 'Bluetooth Speaker',
+          price: 75,
+          imageUrl: '/static/images/speaker.jpg'
+        }
+      ];
+
+      const container = document.getElementById("productContainer");
+      container.innerHTML = "";
+
+      products.forEach(product => {
+        const card = document.createElement("div");
+        card.className = "bg-white dark:bg-gray-800 rounded-lg shadow p-4";
+
+        card.innerHTML = `
+          <div class="relative w-full h-48 shimmer rounded mb-3 overflow-hidden">
+            <img 
+              data-src="${product.imageUrl}" 
+              alt="${product.title}" 
+              class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700"
+            />
+          </div>
+          <h3 class="text-lg font-semibold">${product.title}</h3>
+          <p class="text-orange-600 font-bold">GH₵ ${product.price}</p>
+        `;
+
+        container.appendChild(card);
+      });
+
+      // Image loading effect
+      const images = document.querySelectorAll("img[data-src]");
+      setTimeout(() => {
+        images.forEach(img => {
+          img.src = img.dataset.src;
+          img.onload = () => {
+            img.classList.remove("opacity-0");
+          };
+        });
+      }, 2000);
     }
-  });
-}
 
-    // Initialize both components
+    // Initialize all
     setupAccountDropdown();
     setupMobileSidebar();
+    renderProducts();
   });
 </script>
 

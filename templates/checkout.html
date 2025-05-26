@@ -72,6 +72,7 @@
   </div>
 
   <form id="checkoutForm" method="POST" action="{{ url_for('payment') }}">
+
     <!-- Hidden input for total -->
     <input type="hidden" name="total_price" id="totalPriceInput" value="">
 
@@ -109,9 +110,9 @@
 </div>
 
 <script>
-  // Dark mode toggle and cart count code here (unchanged, your existing code)
   const htmlEl = document.documentElement;
   const darkModeToggle = document.getElementById('darkModeToggle');
+
   function applyTheme(theme) {
     if (theme === 'dark') {
       htmlEl.classList.add('dark');
@@ -122,7 +123,28 @@
     }
     localStorage.setItem('theme', theme);
   }
+
+  async function updateCartCount() {
+    try {
+      const res = await fetch('/api/cart');
+      const data = await res.json();
+      const cart = data.cart || [];
+      const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+      const countEl = document.querySelector('.cart-count');
+      if (countEl) {
+        countEl.innerText = count;
+      }
+    } catch (err) {
+      console.error('Failed to fetch cart count:', err);
+      const countEl = document.querySelector('.cart-count');
+      if (countEl) {
+        countEl.innerText = '0';
+      }
+    }
+  }
+
   document.addEventListener('DOMContentLoaded', () => {
+    // Theme setup
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
@@ -130,19 +152,20 @@
     } else {
       applyTheme('light');
     }
+
     darkModeToggle.addEventListener('click', () => {
       const currentTheme = htmlEl.classList.contains('dark') ? 'dark' : 'light';
       applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
     });
-    function updateCartCount() {
-      const cart = JSON.parse(localStorage.getItem('cart')) || [];
-      const count = cart.reduce((total, item) => total + (item.quantity || 1), 0);
-      document.querySelector('.cart-count').innerText = count;
-    }
+
+    // Initial cart count fetch
     updateCartCount();
+
+    // Listen for cart updates elsewhere in the app
     document.addEventListener('cartUpdated', updateCartCount);
   });
 </script>
+
 
 <script src="{{ url_for('static', filename='checkout.js') }}"></script>
 <script src="{{ url_for('static', filename='gh_towns.js') }}"></script>

@@ -6,27 +6,50 @@ document.addEventListener('DOMContentLoaded', () => {
   const cartCountEl = document.getElementById('cartCount');
   const cartCountElMobile = document.getElementById('cartCountMobile');
 
-  function getCart() {
-    return JSON.parse(localStorage.getItem('cart')) || [];
+  let cart = [];
+
+  async function fetchCart() {
+    try {
+      const res = await fetch('/api/cart');
+      const data = await res.json();
+      cart = data.cart || [];
+      renderCart();
+    } catch (err) {
+      console.error('Failed to fetch cart:', err);
+    }
   }
 
-  function saveCart(cart) {
-    localStorage.setItem('cart', JSON.stringify(cart));
-    document.dispatchEvent(new CustomEvent('cartUpdated'));
+  async function updateCartItem(productId, quantity) {
+    try {
+      await fetch('/api/cart/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product_id: productId, quantity })
+      });
+    } catch (err) {
+      console.error('Error updating item:', err);
+    }
+  }
+
+  async function removeCartItem(productId) {
+    try {
+      await fetch('/api/cart/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product_id: productId })
+      });
+    } catch (err) {
+      console.error('Error removing item:', err);
+    }
   }
 
   function updateCartCount() {
-    const cart = getCart();
-    let cartCount = 0;
-    for (const item of cart) {
-      cartCount += item.quantity || 1;
-    }
+    const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
     if (cartCountEl) cartCountEl.innerText = cartCount;
     if (cartCountElMobile) cartCountElMobile.innerText = cartCount;
   }
 
   function renderCart() {
-    const cart = getCart();
     cartItemsList.innerHTML = '';
     let total = 0;
 
@@ -42,15 +65,15 @@ document.addEventListener('DOMContentLoaded', () => {
       const li = document.createElement('li');
       li.className = 'flex items-center justify-between bg-white dark:bg-gray-800 p-4 rounded shadow';
 
-      const subtotal = item.price * item.quantity;
+      const subtotal = item.product.price * item.quantity;
       total += subtotal;
 
       li.innerHTML = `
         <div class="flex items-center gap-4">
-          <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded" />
+          <img src="${item.product.image}" alt="${item.product.name}" class="w-20 h-20 object-cover rounded" />
           <div>
-            <h4 class="font-semibold">${item.name}</h4>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Price: GH₵${item.price}</p>
+            <h4 class="font-semibold">${item.product.name}</h4>
+            <p class="text-sm text-gray-500 dark:text-gray-400">Price: GH₵${item.product.price}</p>
             <div class="flex items-center mt-2">
               <button class="px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded decrease-btn">-</button>
               <span class="mx-2">${item.quantity}</span>
@@ -67,27 +90,27 @@ document.addEventListener('DOMContentLoaded', () => {
       `;
 
       // Quantity adjustment
-      li.querySelector('.decrease-btn').addEventListener('click', () => {
+      li.querySelector('.decrease-btn').addEventListener('click', async () => {
         if (item.quantity > 1) {
           item.quantity--;
+          await updateCartItem(item.product_id, item.quantity);
         } else {
           cart.splice(index, 1);
+          await removeCartItem(item.product_id);
         }
-        saveCart(cart);
-        renderCart();
+        await fetchCart();
       });
 
-      li.querySelector('.increase-btn').addEventListener('click', () => {
+      li.querySelector('.increase-btn').addEventListener('click', async () => {
         item.quantity++;
-        saveCart(cart);
-        renderCart();
+        await updateCartItem(item.product_id, item.quantity);
+        await fetchCart();
       });
 
-      // Remove item
-      li.querySelector('.remove-btn').addEventListener('click', () => {
+      li.querySelector('.remove-btn').addEventListener('click', async () => {
         cart.splice(index, 1);
-        saveCart(cart);
-        renderCart();
+        await removeCartItem(item.product_id);
+        await fetchCart();
       });
 
       cartItemsList.appendChild(li);
@@ -97,11 +120,9 @@ document.addEventListener('DOMContentLoaded', () => {
       cartTotalEl.textContent = `Total: GH₵${total.toFixed(2)}`;
     }
 
-    updateCartCount(); // Update count when cart is rendered
+    updateCartCount();
   }
 
-  // Listen for cart updates from other scripts/pages
-  document.addEventListener('cartUpdated', updateCartCount);
-
-  renderCart(); // Initial render
+  // Load cart on page load
+  fetchCart();
 });

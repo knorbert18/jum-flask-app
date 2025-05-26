@@ -40,6 +40,62 @@
     #sideNav.open {
       transform: translateX(0);
     }
+
+    /* Overlay animations */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes typewriter {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes draw {
+  from {
+    stroke-dasharray: 0 100;
+  }
+  to {
+    stroke-dasharray: 100 0;
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+.animate-typewriter {
+  animation: typewriter 2s steps(30) 1 forwards;
+  white-space: nowrap;
+  overflow: hidden;
+  border-right: 2px solid white;
+}
+
+.animate-draw {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: draw 1s ease-out forwards;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
   </style>
 </head>
 
@@ -103,7 +159,7 @@
 
       <a href="{{ url_for('cart') }}" class="relative flex items-center hover:text-orange-500">
         <i class="fas fa-shopping-cart"></i> Cart
-        <span class="cart-count" id="cartCount">0</span>
+        <span class="cart-count" id="cartCount">{{ cart_items|length }}</span>
       </a>
 
       <button
@@ -186,9 +242,23 @@
     </div>
   </main>
 
-  <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 text-white text-2xl flex justify-center items-center z-50 hidden">
-    <div class="message">Processing your order...</div>
+  <!-- Animated Creative Overlay -->
+<div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+  <div class="text-center text-white space-y-6 animate-fade-in">
+    <div class="relative w-20 h-20 mx-auto">
+      <div class="absolute inset-0 border-4 border-t-transparent border-orange-500 rounded-full animate-spin"></div>
+    </div>
+    <div class="text-2xl font-semibold whitespace-nowrap overflow-hidden border-r-2 border-white animate-typewriter w-72 mx-auto">
+      <span>Processing your order...</span>
+    </div>
+    <div id="checkmarkContainer" class="hidden">
+      <svg class="w-16 h-16 mx-auto text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+        <path class="animate-draw" d="M5 13l4 4L19 7" />
+      </svg>
+    </div>
   </div>
+</div>
+
 
   <script>
   document.addEventListener('DOMContentLoaded', () => {
@@ -203,6 +273,21 @@
     const cartCountEl = document.getElementById('cartCount');
     const cartCountElMobile = document.getElementById('cartCountMobile');
     const accountDropdown = document.querySelector('.account-dropdown');
+
+    function showCreativeOverlay() {
+  const overlay = document.getElementById("creativeOverlay");
+  overlay.classList.remove("hidden");
+
+  // Optional: After processing, show checkmark
+  setTimeout(() => {
+    document.getElementById("checkmarkContainer").classList.remove("hidden");
+  }, 3000);
+
+  // Optional redirect after success
+  setTimeout(() => {
+    window.location.href = "{{ url_for('checkout') }}";
+  }, 5000);
+}
 
     // ✅ FIX: Always get latest cartItems from localStorage
     function updateCartCount() {
