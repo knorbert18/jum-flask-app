@@ -32,7 +32,7 @@ app.secret_key = os.getenv('SECRET_KEY', '6dca9fa83f8d8cab0a0aba4731048e1809e9a6
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['PAYSTACK_SECRET_KEY'] = os.getenv('PAYSTACK_SECRET_KEY')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SAMESITE'] = 'None'  # Updated: Allows cross-origin cookie sharing
 app.config['SESSION_COOKIE_SECURE'] = True  # Ensures cookie only sent over HTTPS
 app.config['SESSION_COOKIE_HTTPONLY'] = True  # Prevents JS access to the cookie
 app.config['REMEMBER_COOKIE_SECURE'] = True  # If using `remember=True` with login_user()
@@ -45,7 +45,7 @@ app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))
 app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'True') == 'True'
 app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
 app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
-app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_HTTPONLY'] = True  # Duplicate but safe to keep
 app.config['SESSION_PERMANENT'] = True  # Make the session last for the lifetime of the user’s browser
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)  # Set session expiration time (optional)
 
@@ -63,7 +63,7 @@ login_manager.init_app(app)
 login_manager.login_view = 'login'
 
 # Enable CORS with credentials support
-CORS(app, supports_credentials=True)
+CORS(app, supports_credentials=True, origins=["https://jum-flask-app.onrender.com"])
 
 init_admin(app)
 

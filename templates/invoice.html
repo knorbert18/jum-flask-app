@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Invoice #{{ order.order_id }}</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script> tailwind.config = { darkMode: 'class' } </script>
+  <script>tailwind.config = { darkMode: 'class' }</script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white font-sans transition-colors duration-300">
@@ -24,7 +24,6 @@
         <span class="cart-count">{{ cart_count }}</span>
       </a>
       <a href="{{ url_for('orders') }}" class="text-orange-500 font-semibold">Orders</a>
-      <!-- Theme Toggle Button -->
       <button id="darkModeToggle" class="text-gray-700 dark:text-gray-200 hover:text-orange-500">
         <i class="fas fa-moon"></i> Dark Mode
       </button>
@@ -32,8 +31,15 @@
   </div>
 </nav>
 
+<!-- Download PDF Button -->
+<div class="max-w-3xl mx-auto mt-6 flex justify-end">
+  <button id="downloadBtn" class="bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded shadow">
+    <i class="fas fa-download mr-2"></i>Download PDF
+  </button>
+</div>
+
 <!-- Invoice Content -->
-<div class="max-w-3xl mx-auto bg-white dark:bg-gray-800 p-8 shadow-md rounded-lg mt-10">
+<div id="invoice" class="max-w-3xl mx-auto bg-white dark:bg-gray-800 p-8 shadow-md rounded-lg mt-4">
   <!-- Header -->
   <div class="flex justify-between items-center mb-6">
     <div>
@@ -57,8 +63,7 @@
     <p class="text-sm">{{ order.address }}</p>
   </div>
 
-  <p class="text-red-500 text-sm">Order Items: {{ order_items|length }}</p>
-
+  
   <!-- Items Table -->
   <div class="overflow-x-auto mb-6">
     <table class="min-w-full text-sm text-left">
@@ -98,6 +103,7 @@
   </div>
 </div>
 
+<!-- Theme Toggle Script -->
 <script>
   const htmlEl = document.documentElement;
   const darkModeToggle = document.getElementById('darkModeToggle');
@@ -132,6 +138,24 @@
         applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
       });
     }
+  });
+</script>
+
+<!-- html2pdf.js Library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<!-- PDF Export Script -->
+<script>
+  document.getElementById('downloadBtn').addEventListener('click', () => {
+    const invoice = document.getElementById('invoice');
+    const opt = {
+      margin:       0.5,
+      filename:     'invoice_{{ order.order_id }}.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(invoice).save();
   });
 </script>
 
