@@ -1,177 +1,180 @@
 <!DOCTYPE html>
-<html lang="en" class="">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- Viewport meta tag -->
   <title>Ransbet - Home</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-..." crossorigin="anonymous" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = { darkMode: 'class' };
   </script>
   <style>
-  .shimmer {
-    position: relative;
-    overflow: hidden;
-    background-color: #e0e0e0;
-  }
+    .shimmer {
+      position: relative;
+      overflow: hidden;
+      background-color: #e0e0e0;
+    }
 
-  .shimmer::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -150px;
-    width: 100px;
-    height: 100%;
-    background: linear-gradient(to right, transparent 0%, #f0f0f0 50%, transparent 100%);
-    animation: shimmer 1.5s infinite;
-  }
-
-  @keyframes shimmer {
-    0% {
+    .shimmer::after {
+      content: '';
+      position: absolute;
+      top: 0;
       left: -150px;
+      width: 100px;
+      height: 100%;
+      background: linear-gradient(to right, transparent 0%, #f0f0f0 50%, transparent 100%);
+      animation: shimmer 1.5s infinite;
     }
-    100% {
-      left: 100%;
+
+    @keyframes shimmer {
+      0% { left: -150px; }
+      100% { left: 100%; }
     }
-  }
 
-  .fade-in {
-    opacity: 0;
-    transition: opacity 0.6s ease-in;
-  }
+    .fade-in {
+      opacity: 0;
+      transition: opacity 0.6s ease-in;
+    }
 
-  .fade-in.loaded {
-    opacity: 1;
-  }
-</style>
+    .fade-in.loaded {
+      opacity: 1;
+    }
 
+    /* Media Queries for Responsive Design */
+    @media (max-width: 640px) {
+      .text-lg { font-size: 1rem; } /* Adjust font size for small screens */
+      .text-xl { font-size: 1.25rem; }
+      .text-2xl { font-size: 1.5rem; }
+      .p-4 { padding: 1rem; }
+    }
+  </style>
 </head>
 
 <body class="bg-gray-100 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
   <!-- Header -->
-  <header
-  class="bg-white dark:bg-gray-800 shadow-md px-6 py-6 flex justify-between items-center flex-nowrap gap-4 sm:gap-8 sm:px-10 sm:py-8">
+  <header class="bg-white dark:bg-gray-800 shadow-md px-6 py-6 flex justify-between items-center flex-nowrap gap-4 sm:gap-8 sm:px-10 sm:py-8">
 
-  <a href="{{ url_for('index') }}" class="flex items-center space-x-2 flex-shrink-0">
-    <img src="{{ url_for('static', filename='images/ransbet-logo.jpg') }}" alt="Ransbet Logo"
-      class="h-14 w-14 sm:h-16 sm:w-16 rounded-full border-2 border-red-500 shadow-md" />
-    <span class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white whitespace-nowrap">Ransbet</span>
-  </a>
+    <a href="{{ url_for('index') }}" class="flex items-center space-x-2 flex-shrink-0">
+      <img src="{{ url_for('static', filename='images/ransbet-logo.jpg') }}" alt="Ransbet Logo"
+        class="h-14 w-14 sm:h-16 sm:w-16 rounded-full border-2 border-red-500 shadow-md" />
+      <span class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white whitespace-nowrap">Ransbet</span>
+    </a>
 
-  <div class="text-gray-800 dark:text-gray-100 text-lg sm:text-2xl font-medium whitespace-normal sm:whitespace-nowrap flex-shrink">
-  <span class="font-semibold">Welcome,</span>
-  <strong class="text-orange-500 ml-1">{{ username }}</strong>
-</div>
-
-
-
-  <!-- Search Section -->
-  <div class="relative flex items-center gap-2 sm:static flex-shrink-0">
-    <!-- Search Button (mobile only) -->
-    <button id="mobileSearchBtn" class="sm:hidden text-gray-700 dark:text-gray-200">
-      <i class="fas fa-search text-xl"></i>
-    </button>
-
-    <!-- Search Form (hidden on mobile by default) -->
-    <div id="mobileSearchForm"
-      class="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 p-4 sm:relative sm:top-auto sm:left-auto sm:right-auto sm:mt-0 sm:bg-transparent sm:dark:bg-transparent sm:p-0 sm:shadow-none sm:w-auto sm:flex hidden transition-all duration-300 ease-in-out">
-      <input type="text" id="searchInput" placeholder="Search..."
-        class="px-4 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 w-full sm:w-80" />
-      <button onclick="searchProducts()" class="ml-2 bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">
-        Search
-      </button>
+    <div class="text-gray-800 dark:text-gray-100 text-lg sm:text-2xl font-medium whitespace-normal sm:whitespace-nowrap flex-shrink">
+      <span class="font-semibold">Welcome,</span>
+      <strong class="text-orange-500 ml-1">{{ username }}</strong>
     </div>
-  </div>
 
-  <!-- Cart -->
-  <a href="{{ url_for('cart') }}" class="relative text-gray-700 dark:text-gray-200 flex-shrink-0">
-    <i class="fas fa-shopping-cart text-xl"></i>
-    <span id="cart-count"
-      class="absolute -top-2 -right-3 bg-red-600 text-white font-bold rounded-full px-1.5 text-xs">0</span>
-  </a>
-
-  <!-- Account Dropdown -->
-  <div class="relative hidden sm:block flex-shrink-0">
-    <button id="accountDropdownBtn" class="text-gray-700 dark:text-gray-200 flex items-center gap-2">
-      <i class="fas fa-user-circle text-xl"></i> <span>Account</span>
-    </button>
-    <div id="accountDropdown"
-      class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 shadow-lg rounded-lg hidden z-10">
-      <a href="{{ url_for('account') }}"
-        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"><i class="fas fa-cog mr-2"></i>Settings</a>
-      <a href="{{ url_for('orders') }}"
-        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"><i class="fas fa-box mr-2"></i>Orders</a>
-      <a href="{{ url_for('logout') }}"
-        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
-    </div>
-  </div>
-
-  <!-- Dark Mode Toggle -->
-  <button id="darkModeToggle"
-    class="px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-orange-500 flex items-center gap-2 whitespace-nowrap flex-shrink-0">
-    <i class="fas fa-moon"></i> Dark Mode
-  </button>
-
-  <!-- Hamburger for Mobile -->
-  <button id="mobileMenuBtn" class="sm:hidden text-gray-700 dark:text-gray-200 flex-shrink-0 ml-2">
-    <i class="fas fa-bars text-2xl"></i>
-  </button>
-
-  <!-- Mobile sidebar menu -->
-  <div id="mobileSidebar"
-    class="fixed top-0 left-0 w-64 h-full bg-white dark:bg-gray-800 z-40 shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out">
-    <div class="p-4">
-      <button id="closeSidebarBtn" class="text-gray-700 dark:text-gray-200 mb-4">
-        <i class="fas fa-times"></i>
+    <!-- Search Section -->
+    <div class="relative flex items-center gap-2 sm:static flex-shrink-0">
+      <button id="mobileSearchBtn" class="sm:hidden text-gray-700 dark:text-gray-200">
+        <i class="fas fa-search text-xl"></i>
       </button>
 
-      <a href="{{ url_for('account') }}"
-        class="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 hover:text-orange-600 dark:hover:text-white rounded transition duration-200">
-        <i class="fas fa-user"></i> Account
-      </a>
-
-      <a href="{{ url_for('orders') }}"
-        class="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 hover:text-orange-600 dark:hover:text-white rounded transition duration-200">
-        <i class="fas fa-box"></i> Orders
-      </a>
-
-      <a href="{{ url_for('logout') }}"
-        class="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 hover:text-orange-600 dark:hover:text-white rounded transition duration-200">
-        <i class="fas fa-sign-out-alt"></i> Logout
-      </a>
-
-      {% if is_admin %}
-      <a href="{{ url_for('admin.index') }}"
-        class="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 hover:text-orange-600 dark:hover:text-white rounded transition duration-200">
-        <i class="fas fa-tools"></i> Admin Panel
-      </a>
-      {% endif %}
+      <div id="mobileSearchForm" class="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 p-4 sm:relative sm:top-auto sm:left-auto sm:right-auto sm:mt-0 sm:bg-transparent sm:dark:bg-transparent sm:p-0 sm:shadow-none sm:w-auto sm:flex hidden transition-all duration-300 ease-in-out">
+        <input type="text" id="searchInput" placeholder="Search..." class="px-4 py-2 border rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 w-full sm:w-80" />
+        <button onclick="searchProducts()" class="ml-2 bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600">Search</button>
+      </div>
     </div>
-  </div>
 
-</header>
+    <!-- Cart -->
+    <a href="{{ url_for('cart') }}" class="relative text-gray-700 dark:text-gray-200 flex-shrink-0">
+      <i class="fas fa-shopping-cart text-xl"></i>
+      <span id="cart-count" class="absolute -top-2 -right-3 bg-red-600 text-white font-bold rounded-full px-1.5 text-xs">0</span>
+    </a>
 
+    <!-- Account Dropdown -->
+    <div class="relative hidden sm:block flex-shrink-0">
+      <button id="accountDropdownBtn" class="text-gray-700 dark:text-gray-200 flex items-center gap-2">
+        <i class="fas fa-user-circle text-xl"></i> <span>Account</span>
+      </button>
+      <div id="accountDropdown" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 shadow-lg rounded-lg hidden z-10">
+        <a href="{{ url_for('account') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"><i class="fas fa-cog mr-2"></i>Settings</a>
+        <a href="{{ url_for('orders') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"><i class="fas fa-box mr-2"></i>Orders</a>
+        <a href="{{ url_for('logout') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+      </div>
+    </div>
+
+    <!-- Dark Mode Toggle -->
+    <button id="darkModeToggle" class="hidden sm:flex px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-orange-500 items-center gap-2 whitespace-nowrap flex-shrink-0">
+      <i class="fas fa-moon"></i> Dark Mode
+    </button>
+
+    <!-- Hamburger for Mobile -->
+    <button id="mobileMenuBtn" class="sm:hidden text-gray-700 dark:text-gray-200 flex-shrink-0 ml-2">
+      <i class="fas fa-bars text-2xl"></i>
+    </button>
+
+    <!-- Mobile sidebar menu -->
+    <div id="mobileSidebar" class="fixed top-0 left-0 w-64 h-full bg-white dark:bg-gray-800 z-40 shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out">
+      <div class="p-4">
+        <button id="closeSidebarBtn" class="text-gray-700 dark:text-gray-200 mb-4">
+          <i class="fas fa-times"></i>
+        </button>
+
+        <a href="{{ url_for('account') }}" class="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 hover:text-orange-600 dark:hover:text-white rounded transition duration-200">
+          <i class="fas fa-user"></i> Account
+        </a>
+
+        <a href="{{ url_for('orders') }}" class="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 hover:text-orange-600 dark:hover:text-white rounded transition duration-200">
+          <i class="fas fa-box"></i> Orders
+        </a>
+
+        <a href="{{ url_for('logout') }}" class="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 hover:text-orange-600 dark:hover:text-white rounded transition duration-200">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </a>
+
+        <!-- Dark Mode Toggle in Mobile Sidebar -->
+        <button id="mobileDarkModeToggle" class="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 hover:text-orange-600 dark:hover:text-white rounded transition duration-200">
+          <i class="fas fa-moon"></i> Dark Mode
+        </button>
+
+        {% if is_admin %}
+        <a href="{{ url_for('admin.index') }}" class="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 hover:text-orange-600 dark:hover:text-white rounded transition duration-200">
+          <i class="fas fa-tools"></i> Admin Panel
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+  </header>
+
+  <!-- Flash Sales Section -->
+  <section class="relative">
+    <div class="bg-cover bg-center h-96" style="background-image: url('https://via.placeholder.com/1200x400');">
+        <div class="flex items-center justify-center h-full bg-black bg-opacity-50">
+            <div class="text-center text-white">
+                <h1 class="text-4xl font-bold">Discover Your Style</h1>
+                <p class="mt-2">Explore our latest collection of fashion and accessories</p>
+                <a href="#shopByCategory" class="mt-4 inline-block bg-orange-500 text-white px-6 py-2 rounded">Shop Now</a>
+            </div>
+        </div>
+    </div>
+</section>
 
   <!-- Category Dropdown Filter -->
-  <div class="p-4">
-    <label for="categorySelect" class="block mb-2 font-semibold text-gray-700 dark:text-gray-200">Filter by Category:</label>
-    <select id="categorySelect"
-      class="category-dropdown px-4 py-2 rounded border dark:bg-gray-700 dark:text-white dark:border-gray-600">
-      <option value="All">All</option>
-      <option value="Men">Men</option>
-      <option value="Ladies">Ladies</option>
-      <option value="Accessories">Accessories</option>
-      <option value="Mobile">Mobile</option>
-      <option value="Children">Children</option>
-      <option value="Jewelries">Jewelries</option>
-      <option value="Electronics">Electronics</option>
-      <option value="Home">Home</option>
-      <option value="Gaming">Gaming</option>
-      <option value="Footwear">Footwear</option>
-      <option value="Sports">Sports</option>
-    </select>
-  </div>
+  <!-- 🏷️ Shop by Category Section -->
+<section id="shopByCategory" class="p-4">
+  <label for="categorySelect" class="block mb-2 font-semibold text-gray-700 dark:text-gray-200">Filter by Category:</label>
+  <select id="categorySelect" class="category-dropdown px-4 py-2 rounded border dark:bg-gray-700 dark:text-white dark:border-gray-600">
+    <option value="All">All</option>
+    <option value="Men">Men</option>
+    <option value="Ladies">Ladies</option>
+    <option value="Accessories">Accessories</option>
+    <option value="Mobile">Mobile</option>
+    <option value="Children">Children</option>
+    <option value="Jewelries">Jewelries</option>
+    <option value="Electronics">Electronics</option>
+    <option value="Home">Home</option>
+    <option value="Gaming">Gaming</option>
+    <option value="Footwear">Footwear</option>
+    <option value="Sports">Sports</option>
+  </select>
+
+</section>
+
 
   <!-- Product Grid -->
   <main class="p-4 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="productContainer"></main>
@@ -181,28 +184,31 @@
   document.addEventListener('DOMContentLoaded', () => {
     const htmlEl = document.documentElement;
     const darkModeToggle = document.getElementById('darkModeToggle');
+    const mobileDarkModeToggle = document.getElementById('mobileDarkModeToggle');
 
     function applyTheme(theme) {
       if (theme === 'dark') {
         htmlEl.classList.add('dark');
         darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+        mobileDarkModeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
       } else {
         htmlEl.classList.remove('dark');
         darkModeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+        mobileDarkModeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
       }
       localStorage.setItem('theme', theme);
     }
 
-    let savedTheme = localStorage.getItem('theme');
+    const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      applyTheme('dark');
-    } else {
-      applyTheme('light');
-    }
+    applyTheme(savedTheme === 'dark' || (!savedTheme && prefersDark) ? 'dark' : 'light');
 
     darkModeToggle.addEventListener('click', () => {
+      const currentTheme = htmlEl.classList.contains('dark') ? 'dark' : 'light';
+      applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    });
+
+    mobileDarkModeToggle.addEventListener('click', () => {
       const currentTheme = htmlEl.classList.contains('dark') ? 'dark' : 'light';
       applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
     });
@@ -251,92 +257,102 @@
       });
     }
 
+    // 🔍 Mobile search toggle
     const mobileSearchBtn = document.getElementById('mobileSearchBtn');
     const mobileSearchForm = document.getElementById('mobileSearchForm');
-
     if (mobileSearchBtn && mobileSearchForm) {
       mobileSearchBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        if (mobileSearchForm.classList.contains('hidden')) {
-          mobileSearchForm.classList.remove('hidden');
-          mobileSearchForm.classList.add('flex');
-        } else {
-          mobileSearchForm.classList.remove('flex');
-          mobileSearchForm.classList.add('hidden');
-        }
+        mobileSearchForm.classList.toggle('hidden');
+        mobileSearchForm.classList.toggle('flex');
       });
 
       document.addEventListener('click', (e) => {
-        if (
-          !mobileSearchForm.contains(e.target) &&
-          !mobileSearchBtn.contains(e.target)
-        ) {
+        if (!mobileSearchForm.contains(e.target) && !mobileSearchBtn.contains(e.target)) {
           mobileSearchForm.classList.remove('flex');
           mobileSearchForm.classList.add('hidden');
         }
       });
     }
 
-    // 🧩 Product rendering with shimmer effect
-    function renderProducts() {
+    // 🧩 Render and filter products
+    function renderProducts(filterCategory = "All") {
       const products = [
-        {
-          title: 'Wireless Headphones',
-          price: 120,
-          imageUrl: '/static/images/headphones.jpg'
-        },
-        {
-          title: 'Smart Watch',
-          price: 90,
-          imageUrl: '/static/images/smartwatch.jpg'
-        },
-        {
-          title: 'Gaming Mouse',
-          price: 45,
-          imageUrl: '/static/images/mouse.jpg'
-        },
-        {
-          title: 'Bluetooth Speaker',
-          price: 75,
-          imageUrl: '/static/images/speaker.jpg'
-        }
+        { title: 'Wireless Headphones', price: 120, category: 'Electronics', imageUrl: '/static/images/headphones.jpg' },
+        { title: 'Smart Watch', price: 90, category: 'Accessories', imageUrl: '/static/images/smartwatch.jpg' },
+        { title: 'Gaming Mouse', price: 45, category: 'Gaming', imageUrl: '/static/images/mouse.jpg' },
+        { title: 'Bluetooth Speaker', price: 75, category: 'Electronics', imageUrl: '/static/images/speaker.jpg' },
+        { title: 'Men’s Shoes', price: 150, category: 'Men', imageUrl: '/static/images/shoes.jpg' }
       ];
 
       const container = document.getElementById("productContainer");
       container.innerHTML = "";
 
-      products.forEach(product => {
+      const filtered = filterCategory === "All"
+        ? products
+        : products.filter(p => p.category === filterCategory);
+
+      filtered.forEach(product => {
         const card = document.createElement("div");
         card.className = "bg-white dark:bg-gray-800 rounded-lg shadow p-4";
-
         card.innerHTML = `
           <div class="relative w-full h-48 shimmer rounded mb-3 overflow-hidden">
             <img 
               data-src="${product.imageUrl}" 
               alt="${product.title}" 
-              class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700"
+              class="absolute inset-0 w-full h-full object-cover fade-in opacity-0 transition-opacity duration-700"
             />
           </div>
           <h3 class="text-lg font-semibold">${product.title}</h3>
           <p class="text-orange-600 font-bold">GH₵ ${product.price}</p>
-        `;
+          `;
 
         container.appendChild(card);
       });
 
-      // Image loading effect
-      const images = document.querySelectorAll("img[data-src]");
+      // Lazy-load images with fade-in
       setTimeout(() => {
+        const images = document.querySelectorAll("img[data-src]");
         images.forEach(img => {
-          img.src = img.dataset.src;
-          img.onload = () => {
-            img.classList.remove("opacity-0");
-          };
+          const realSrc = img.getAttribute("data-src");
+          img.setAttribute("src", realSrc);
+
+          if (img.complete) {
+            img.classList.add("loaded");
+          } else {
+            img.onload = () => img.classList.add("loaded");
+          }
         });
-      }, 2000);
+      }, 2000); // ✅ <-- this was missing (delay and semicolon)
+    }
+    // 🛍️ Category Dropdown
+    const categorySelect = document.getElementById('categorySelect');
+    categorySelect.addEventListener('change', () => {
+      const selected = categorySelect.value;
+      renderProducts(selected);
+    });
+
+    // 🛍️ Category Buttons (Shop Now in cards)
+    const categoryButtons = document.querySelectorAll('.shop-category-btn');
+    categoryButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const selectedCategory = btn.dataset.category;
+        categorySelect.value = selectedCategory;
+        renderProducts(selectedCategory);
+        document.getElementById('productContainer').scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    // 🔽 Hero "Shop Now" Scroll
+    const heroShopLink = document.querySelector('a[href="#shopByCategory"]');
+    if (heroShopLink) {
+      heroShopLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.querySelector('#shopByCategory').scrollIntoView({ behavior: 'smooth' });
+      });
     }
 
-    // Initialize all
+    // ✅ Init
     setupAccountDropdown();
     setupMobileSidebar();
     renderProducts();

@@ -5,7 +5,6 @@ from datetime import datetime
 # Initialize the SQLAlchemy object
 db = SQLAlchemy()
 
-
 # User Model
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
@@ -34,7 +33,6 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return f"<User {self.username}>"
 
-
 # User Settings Model
 class UserSettings(db.Model):
     __tablename__ = 'user_settings'
@@ -48,7 +46,6 @@ class UserSettings(db.Model):
     def __repr__(self):
         return f"<UserSettings UserID={self.user_id}>"
 
-
 # Product Model
 class Product(db.Model):
     __tablename__ = 'products'
@@ -60,8 +57,8 @@ class Product(db.Model):
     stock = db.Column(db.Integer, default=0)
     image = db.Column(db.String(255))
 
-    # Reverse relationship with OrderItem (only one backref)
-    order_items = db.relationship('OrderItem', backref='product', lazy=True)
+    # Relationship to OrderItem
+    order_items = db.relationship('OrderItem', back_populates='product', lazy=True)
 
     def __repr__(self):
         return f"<Product {self.name}>"
@@ -89,25 +86,26 @@ class Order(db.Model):
 
     # Relationships
     user = db.relationship('User', back_populates='orders')
-    items = db.relationship('OrderItem', back_populates='order', lazy=True)
+    items = db.relationship(
+        'OrderItem',
+        back_populates='order',
+        lazy=True,
+        cascade='all, delete-orphan'
+    )
 
     @property
     def computed_total(self):
-        # Compute the total of the order by summing the total price of each item
         return sum(item.total_price for item in self.items)
 
     def subtotal(self):
-        # Calculate subtotal by summing the price of each item
         return sum(item.price for item in self.items)
 
     @property
     def tax(self):
-        # Calculate tax (assuming 10% rate)
         return self.subtotal() * 0.10
 
     @property
     def total_with_tax(self):
-        # Calculate the total including tax
         return self.subtotal() + self.tax
 
     def __repr__(self):
@@ -118,22 +116,21 @@ class OrderItem(db.Model):
     __tablename__ = 'order_items'
 
     id = db.Column(db.Integer, primary_key=True)
-    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.id', ondelete='CASCADE'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    product_name = db.Column(db.String(100))  # Snapshot of product name at order time
     quantity = db.Column(db.Integer, nullable=False)
-    price = db.Column(db.Float, nullable=False)  # Price at the time of the order
+    price = db.Column(db.Float, nullable=False)
 
-    # Relationships
     order = db.relationship('Order', back_populates='items')
+    product = db.relationship('Product', back_populates='order_items')
 
     @property
     def total_price(self):
-        """Calculates the total price for this order item."""
         return float(self.quantity) * float(self.price)
 
     def __repr__(self):
         return f"<OrderItem order_id={self.order_id}, product_id={self.product_id}, qty={self.quantity}>"
-
 
 # CartItem Model
 class CartItem(db.Model):

@@ -1,251 +1,277 @@
 <!DOCTYPE html>
-<html lang="en" class="">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ransbet - About Us</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ransbet - About Us</title>
 
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-    }
-  </script>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
 
-  <!-- Font Awesome -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
-  <style>
-    /* Custom scrollbar for dark mode */
-    body::-webkit-scrollbar {
-      width: 8px;
-    }
-    body::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    body::-webkit-scrollbar-thumb {
-      background-color: rgba(156, 163, 175, 0.5);
-      border-radius: 9999px;
-      border: 2px solid transparent;
-      background-clip: content-box;
-    }
-  </style>
+    <style>
+        /* Custom scrollbar for dark mode */
+        body::-webkit-scrollbar {
+            width: 8px;
+        }
+        body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        body::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.5);
+            border-radius: 9999px;
+            border: 2px solid transparent;
+            background-clip: content-box;
+        }
+    </style>
 </head>
 
 <body class="bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300 flex flex-col min-h-screen">
 
-  <!-- Navbar/Header -->
-  <header class="bg-white dark:bg-gray-800 shadow p-4 sticky top-0 z-30">
-    <nav class="container mx-auto flex items-center justify-between flex-wrap">
-      <!-- Left: Logo -->
-      <a href="{{ url_for('index') }}" class="flex items-center space-x-2">
-        <img src="{{ url_for('static', filename='images/ransbet-logo.jpg') }}" alt="Ransbet Logo" class="h-10 w-10 rounded-full border-2 border-red-500 shadow-md" />
-        <span class="text-2xl font-bold text-gray-800 dark:text-white">Ransbet</span>
-      </a>
+    <!-- Navbar/Header -->
+    <header class="bg-white dark:bg-gray-800 shadow p-4 sticky top-0 z-30">
+        <nav class="container mx-auto flex items-center justify-between flex-wrap">
+            <!-- Left: Logo -->
+            <a href="{{ url_for('index') }}" class="flex items-center space-x-2">
+                <img src="{{ url_for('static', filename='images/ransbet-logo.jpg') }}" alt="Ransbet Logo" class="h-10 w-10 rounded-full border-2 border-red-500 shadow-md" />
+                <span class="text-2xl font-bold text-gray-800 dark:text-white">Ransbet</span>
+            </a>
 
-      <!-- Right: Nav links + theme toggle -->
-      <div class="hidden lg:flex ml-auto items-center space-x-6">
-        <a href="{{ url_for('index') }}" class="text-gray-700 dark:text-gray-300 hover:text-orange-500 font-semibold transition">Home</a>
+            <!-- Right: Nav links + theme toggle -->
+            <div class="hidden lg:flex ml-auto items-center space-x-6">
+                <a href="{{ url_for('index') }}" class="text-gray-700 dark:text-gray-300 hover:text-orange-500 font-semibold transition">Home</a>
 
-        <a href="{{ url_for('cart') }}" class="relative text-gray-700 dark:text-gray-300 hover:text-orange-500 font-semibold transition flex items-center gap-1">
-          <i class="fas fa-shopping-cart"></i> Cart
-          <span id="cartCount" class="absolute -top-1 -right-4 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-orange-600 rounded-full">0</span>
-        </a>
+                <a href="{{ url_for('cart') }}" class="relative text-gray-700 dark:text-gray-300 hover:text-orange-500 font-semibold transition flex items-center gap-1">
+                    <i class="fas fa-shopping-cart"></i> Cart
+                    <span id="cartCount" class="absolute -top-1 -right-4 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-orange-600 rounded-full">0</span>
+                </a>
 
-        <a href="{{ url_for('about') }}" class="text-orange-600 dark:text-orange-400 font-semibold border-b-2 border-orange-500 hover:text-orange-700 dark:hover:text-orange-500 transition">About</a>
+                <a href="{{ url_for('about') }}" class="text-orange-600 dark:text-orange-400 font-semibold border-b-2 border-orange-500 hover:text-orange-700 dark:hover:text-orange-500 transition">About</a>
 
-        <button id="themeToggle" aria-label="Toggle dark mode" class="text-gray-700 dark:text-gray-300 hover:text-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500 rounded p-2">
-          <i id="themeIcon" class="fas fa-moon fa-lg"></i>
-        </button>
-      </div>
+                <button id="themeToggle" aria-label="Toggle dark mode" class="text-gray-700 dark:text-gray-300 hover:text-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500 rounded p-2">
+                    <i id="themeIcon" class="fas fa-moon fa-lg"></i>
+                </button>
+            </div>
 
-      <!-- Mobile menu toggle button -->
-      <div class="block lg:hidden ml-auto">
-        <button id="navToggle" class="text-gray-700 dark:text-gray-300 hover:text-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500 rounded p-2">
-          <i class="fas fa-bars fa-lg"></i>
-        </button>
-      </div>
-    </nav>
+            <!-- Mobile menu toggle button -->
+            <div class="block lg:hidden ml-auto">
+                <button id="navToggle" class="text-gray-700 dark:text-gray-300 hover:text-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500 rounded p-2">
+                    <i class="fas fa-bars fa-lg"></i>
+                </button>
+            </div>
+        </nav>
 
-    <!-- Mobile menu (hidden by default) -->
-    <div id="navMenu" class="lg:hidden hidden mt-4 space-y-2 px-4">
-      <a href="{{ url_for('index') }}" class="block py-2 px-4 text-gray-700 dark:text-gray-300 hover:text-orange-500 font-semibold transition">Home</a>
-      <a href="{{ url_for('cart') }}" class="relative block py-2 px-4 text-gray-700 dark:text-gray-300 hover:text-orange-500 font-semibold transition flex items-center gap-1">
-        <i class="fas fa-shopping-cart"></i> Cart
-        <span id="cartCountMobile" class="absolute -top-1 -right-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-orange-600 rounded-full">0</span>
-      </a>
-      <a href="{{ url_for('about') }}" class="block py-2 px-4 text-orange-600 dark:text-orange-400 font-semibold border-b-2 border-orange-500 lg:border-b-0 lg:border-transparent hover:text-orange-700 dark:hover:text-orange-500 transition">About</a>
-      <button id="themeToggleMobile" aria-label="Toggle dark mode" class="text-gray-700 dark:text-gray-300 hover:text-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500 rounded p-2 w-full text-left">
-        <i id="themeIconMobile" class="fas fa-moon fa-lg"></i> Theme
-      </button>
+        <!-- Mobile menu (hidden by default) -->
+        <div id="navMenu" class="lg:hidden hidden mt-4 space-y-2 px-4">
+            <a href="{{ url_for('index') }}" class="block py-2 px-4 text-gray-700 dark:text-gray-300 hover:text-orange-500 font-semibold transition">Home</a>
+            <a href="{{ url_for('cart') }}" class="relative block py-2 px-4 text-gray-700 dark:text-gray-300 hover:text-orange-500 font-semibold transition flex items-center gap-1">
+                <i class="fas fa-shopping-cart"></i> Cart
+                <span id="cartCountMobile" class="absolute -top-1 -right-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-orange-600 rounded-full">0</span>
+            </a>
+            <a href="{{ url_for('about') }}" class="block py-2 px-4 text-orange-600 dark:text-orange-400 font-semibold border-b-2 border-orange-500 lg:border-b-0 lg:border-transparent hover:text-orange-700 dark:hover:text-orange-500 transition">About</a>
+            <button id="themeToggleMobile" aria-label="Toggle dark mode" class="text-gray-700 dark:text-gray-300 hover:text-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-500 rounded p-2 w-full text-left">
+                <i id="themeIconMobile" class="fas fa-moon fa-lg"></i> Theme
+            </button>
+        </div>
+    </header>
+
+    <div class="flex flex-grow">
+        <!-- Sidebar for mobile -->
+        <aside id="mobileSidebar" class="fixed inset-0 bg-gray-800 bg-opacity-75 z-50 hidden">
+            <div class="flex flex-col bg-white dark:bg-gray-800 w-64 h-full p-4">
+                <button id="closeSidebarBtn" class="text-gray-700 dark:text-gray-200 mb-4">
+                    <i class="fas fa-times text-2xl"></i>
+                </button>
+                <h2 class="text-lg font-semibold mb-4">Account Navigation</h2>
+                <ul>
+                    <li><a href="{{ url_for('index') }}" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded">Home</a></li>
+                    <li><a href="{{ url_for('cart') }}" class="relative block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded">Cart</a></li>
+                    <li><a href="{{ url_for('about') }}" class="block px-4 py-2 hover:bg-gray-200 dark:hover:bg-gray-700 rounded">About</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="flex-grow bg-gray-50 dark:bg-gray-900 py-8">
+            <div class="max-w-4xl mx-auto px-4">
+                <h1 class="text-3xl font-bold mb-6" data-i18n="account_settings">About Us</h1>
+
+                <section class="text-center mb-12">
+                    <h1 class="text-5xl font-extrabold mb-4">About Us</h1>
+                    <p class="text-lg max-w-3xl mx-auto text-gray-700 dark:text-gray-300 leading-relaxed">
+                        Ransbet is your trusted online marketplace, dedicated to delivering a seamless and enjoyable shopping experience. We combine variety, value, and outstanding service to connect you with the products you love. Since our founding, we have aimed to bring the best online shopping experience to customers everywhere, ensuring quality, affordability, and reliability.
+                    </p>
+                </section>
+
+                <section class="bg-orange-50 dark:bg-gray-800 rounded-lg p-8 mb-12 shadow-md">
+                    <h2 class="text-3xl font-semibold mb-4 text-center text-orange-600 dark:text-orange-400">Our Mission</h2>
+                    <p class="max-w-4xl mx-auto text-center text-gray-800 dark:text-gray-200 leading-relaxed">
+                        At Ransbet, we are committed to making shopping effortless, enjoyable, and accessible for all. Our goal is to provide a secure, user-friendly platform that connects customers with quality products and trusted sellers worldwide.
+                    </p>
+                    <p class="max-w-4xl mx-auto text-center mt-4 text-gray-800 dark:text-gray-200 leading-relaxed">
+                        We constantly innovate and improve to meet your needs and deliver exceptional value with every purchase. Customer satisfaction and transparency are at the heart of everything we do, ensuring a positive shopping journey for every visitor.
+                    </p>
+                </section>
+
+                <section class="mb-12">
+                    <h2 class="text-3xl font-semibold mb-6 text-center">Our Core Values</h2>
+                    <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+                        <div>
+                            <i class="fas fa-shield-alt text-orange-600 dark:text-orange-400 text-4xl mb-4"></i>
+                            <h3 class="text-xl font-bold mb-2">Trust & Security</h3>
+                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                                We prioritize your safety with secure payments and privacy protection.
+                            </p>
+                        </div>
+                        <div>
+                            <i class="fas fa-hand-holding-heart text-orange-600 dark:text-orange-400 text-4xl mb-4"></i>
+                            <h3 class="text-xl font-bold mb-2">Customer Focus</h3>
+                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                                We listen to our customers and strive to provide outstanding support and satisfaction.
+                            </p>
+                        </div>
+                        <div>
+                            <i class="fas fa-rocket text-orange-600 dark:text-orange-400 text-4xl mb-4"></i>
+                            <h3 class="text-xl font-bold mb-2">Innovation</h3>
+                            <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                                We continuously enhance our platform to offer the best shopping experience possible.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <section>
+                    <h2 class="text-3xl font-semibold mb-8 text-center">Our Team</h2>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <!-- Team Member 1 -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col items-center text-center">
+                            <img src="{{ url_for('static', filename='images/Donald.jpeg') }}" alt="Azu Donald - CEO" class="rounded-full w-36 h-36 object-cover mb-4 shadow-lg" />
+                            <h3 class="text-xl font-bold mb-1">Azu Donald</h3>
+                            <p class="text-orange-600 dark:text-orange-400 font-semibold mb-2"><i class="fas fa-user-tie mr-2"></i>CEO</p>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm">
+                                Visionary leader driving Ransbet’s mission to revolutionize online shopping with a passion for innovation and customer success.
+                            </p>
+                        </div>
+
+                        <!-- Team Member 2 -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col items-center text-center">
+                            <img src="{{ url_for('static', filename='images/Sandra.jpeg') }}" alt="Bonsu Sandra - Marketing Director" class="rounded-full w-36 h-36 object-cover mb-4 shadow-lg" />
+                            <h3 class="text-xl font-bold mb-1">Bonsu Sandra</h3>
+                            <p class="text-orange-600 dark:text-orange-400 font-semibold mb-2"><i class="fas fa-bullhorn mr-2"></i>Marketing Director</p>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm">
+                                Creating impactful campaigns that connect Ransbet with a global customer base and drive brand awareness.
+                            </p>
+                        </div>
+
+                        <!-- Team Member 3 -->
+                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col items-center text-center">
+                            <img src="{{ url_for('static', filename='images/Norbert.jpeg') }}" alt="Ashong Norbert - CTO" class="rounded-full w-36 h-36 object-cover mb-4 shadow-lg" />
+                            <h3 class="text-xl font-bold mb-1">Ashong Norbert</h3>
+                            <p class="text-orange-600 dark:text-orange-400 font-semibold mb-2"><i class="fas fa-laptop-code mr-2"></i>CTO</p>
+                            <p class="text-gray-600 dark:text-gray-300 text-sm">
+                                Leading technology innovation to build a secure and efficient shopping platform that scales with our growing community.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
     </div>
-  </header>
 
-  <!-- Main content -->
-  <main class="flex-grow container mx-auto px-6 py-12 max-w-6xl">
-
-    <!-- About Us Title -->
-    <section class="text-center mb-12">
-      <h1 class="text-5xl font-extrabold mb-4">About Us</h1>
-      <p class="text-lg max-w-3xl mx-auto text-gray-700 dark:text-gray-300 leading-relaxed">
-        Ransbet is your trusted online marketplace, dedicated to delivering a seamless and enjoyable shopping experience. We combine variety, value, and outstanding service to connect you with the products you love. Since our founding, we have aimed to bring the best online shopping experience to customers everywhere, ensuring quality, affordability, and reliability.
-      </p>
-    </section>
-
-    <!-- Our Mission Section -->
-    <section class="bg-orange-50 dark:bg-gray-800 rounded-lg p-8 mb-12 shadow-md">
-      <h2 class="text-3xl font-semibold mb-4 text-center text-orange-600 dark:text-orange-400">Our Mission</h2>
-      <p class="max-w-4xl mx-auto text-center text-gray-800 dark:text-gray-200 leading-relaxed">
-        At Ransbet, we are committed to making shopping effortless, enjoyable, and accessible for all. Our goal is to provide a secure, user-friendly platform that connects customers with quality products and trusted sellers worldwide.
-      </p>
-      <p class="max-w-4xl mx-auto text-center mt-4 text-gray-800 dark:text-gray-200 leading-relaxed">
-        We constantly innovate and improve to meet your needs and deliver exceptional value with every purchase. Customer satisfaction and transparency are at the heart of everything we do, ensuring a positive shopping journey for every visitor.
-      </p>
-    </section>
-
-    <!-- Our Values Section -->
-    <section class="mb-12">
-      <h2 class="text-3xl font-semibold mb-6 text-center">Our Core Values</h2>
-      <div class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
-        <div>
-          <i class="fas fa-shield-alt text-orange-600 dark:text-orange-400 text-4xl mb-4"></i>
-          <h3 class="text-xl font-bold mb-2">Trust & Security</h3>
-          <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
-            We prioritize your safety with secure payments and privacy protection.
-          </p>
+    <!-- Footer -->
+    <footer class="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 py-6 mt-12 border-t border-gray-300 dark:border-gray-700">
+        <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
+            <p class="text-sm">&copy; 2025 Ransbet. All rights reserved.</p>
+            <div class="flex space-x-6 mt-4 md:mt-0">
+                <a href="#" aria-label="Facebook" class="hover:text-orange-500 transition"><i class="fab fa-facebook fa-lg"></i></a>
+                <a href="#" aria-label="Twitter" class="hover:text-orange-500 transition"><i class="fab fa-twitter fa-lg"></i></a>
+                <a href="#" aria-label="Instagram" class="hover:text-orange-500 transition"><i class="fab fa-instagram fa-lg"></i></a>
+                <a href="mailto:support@Ransbet.com" aria-label="Email" class="hover:text-orange-500 transition"><i class="fas fa-envelope fa-lg"></i></a>
+            </div>
         </div>
-        <div>
-          <i class="fas fa-hand-holding-heart text-orange-600 dark:text-orange-400 text-4xl mb-4"></i>
-          <h3 class="text-xl font-bold mb-2">Customer Focus</h3>
-          <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
-            We listen to our customers and strive to provide outstanding support and satisfaction.
-          </p>
-        </div>
-        <div>
-          <i class="fas fa-rocket text-orange-600 dark:text-orange-400 text-4xl mb-4"></i>
-          <h3 class="text-xl font-bold mb-2">Innovation</h3>
-          <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
-            We continuously enhance our platform to offer the best shopping experience possible.
-          </p>
-        </div>
-      </div>
-    </section>
+    </footer>
 
-    <!-- Our Team Section -->
-    <section>
-      <h2 class="text-3xl font-semibold mb-8 text-center">Our Team</h2>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        <!-- Team Member 1 -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col items-center text-center">
-          <img src="{{ url_for('static', filename='images/Donald.jpeg') }}" alt="Jane Doe - CEO" class="rounded-full w-36 h-36 object-cover mb-4 shadow-lg" />
-          <h3 class="text-xl font-bold mb-1">Azu Donald</h3>
-          <p class="text-orange-600 dark:text-orange-400 font-semibold mb-2"><i class="fas fa-user-tie mr-2"></i>CEO</p>
-          <p class="text-gray-600 dark:text-gray-300 text-sm">
-            Visionary leader driving Ransbet’s mission to revolutionize online shopping with a passion for innovation and customer success.
-          </p>
-        </div>
-
-        <!-- Team Member 2 -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col items-center text-center">
-          <img src="{{ url_for('static', filename='images/Sandra.jpeg') }}" alt="John Smith - Marketing Director" class="rounded-full w-36 h-36 object-cover mb-4 shadow-lg" />
-          <h3 class="text-xl font-bold mb-1">Bonsu Sandra</h3>
-          <p class="text-orange-600 dark:text-orange-400 font-semibold mb-2"><i class="fas fa-bullhorn mr-2"></i>Marketing Director</p>
-          <p class="text-gray-600 dark:text-gray-300 text-sm">
-            Creating impactful campaigns that connect Ransbet with a global customer base and drive brand awareness.
-          </p>
-        </div>
-
-        <!-- Team Member 3 -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 flex flex-col items-center text-center">
-          <img src="{{ url_for('static', filename='images/Norbert.jpeg') }}" alt="Sara Lee - CTO" class="rounded-full w-36 h-36 object-cover mb-4 shadow-lg" />
-          <h3 class="text-xl font-bold mb-1">Ashong Norbert</h3>
-          <p class="text-orange-600 dark:text-orange-400 font-semibold mb-2"><i class="fas fa-laptop-code mr-2"></i>CTO</p>
-          <p class="text-gray-600 dark:text-gray-300 text-sm">
-            Leading technology innovation to build a secure and efficient shopping platform that scales with our growing community.
-          </p>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- Footer -->
-  <footer class="bg-gray-100 dark:bg-gray-900 text-gray-600 dark:text-gray-400 py-6 mt-12 border-t border-gray-300 dark:border-gray-700">
-    <div class="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center">
-      <p class="text-sm">&copy; 2025 Ransbet. All rights reserved.</p>
-      <div class="flex space-x-6 mt-4 md:mt-0">
-        <a href="#" aria-label="Facebook" class="hover:text-orange-500 transition"><i class="fab fa-facebook fa-lg"></i></a>
-        <a href="#" aria-label="Twitter" class="hover:text-orange-500 transition"><i class="fab fa-twitter fa-lg"></i></a>
-        <a href="#" aria-label="Instagram" class="hover:text-orange-500 transition"><i class="fab fa-instagram fa-lg"></i></a>
-        <a href="mailto:support@Ransbet.com" aria-label="Email" class="hover:text-orange-500 transition"><i class="fas fa-envelope fa-lg"></i></a>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    // Navbar mobile toggle
-    document.getElementById('navToggle').addEventListener('click', () => {
-      const navMenu = document.getElementById('navMenu');
-      navMenu.classList.toggle('hidden');
-    });
-
-    // Dark mode toggle based on saved preference or system
-    (function() {
-      const themeToggleButtons = [document.getElementById('themeToggle'), document.getElementById('themeToggleMobile')];
-      const themeIcons = [document.getElementById('themeIcon'), document.getElementById('themeIconMobile')];
-      const darkClass = 'dark';
-
-      function updateIcons(isDark) {
-        themeIcons.forEach(icon => {
-          icon.classList.toggle('fa-moon', !isDark);
-          icon.classList.toggle('fa-sun', isDark);
+    <script>
+        // Navbar mobile toggle
+        document.getElementById('navToggle').addEventListener('click', () => {
+            const navMenu = document.getElementById('navMenu');
+            navMenu.classList.toggle('hidden');
         });
-      }
 
-      function setTheme(isDark) {
-        if(isDark) {
-          document.documentElement.classList.add(darkClass);
-          localStorage.setItem('theme', 'dark');
-        } else {
-          document.documentElement.classList.remove(darkClass);
-          localStorage.setItem('theme', 'light');
+        // Sidebar mobile toggle
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            const mobileSidebar = document.getElementById('mobileSidebar');
+            mobileSidebar.classList.toggle('hidden');
+        });
+
+        document.getElementById('closeSidebarBtn').addEventListener('click', () => {
+            const mobileSidebar = document.getElementById('mobileSidebar');
+            mobileSidebar.classList.add('hidden');
+        });
+
+        // Dark mode toggle based on saved preference or system
+        (function() {
+            const themeToggleButtons = [document.getElementById('themeToggle'), document.getElementById('themeToggleMobile')];
+            const themeIcons = [document.getElementById('themeIcon'), document.getElementById('themeIconMobile')];
+            const darkClass = 'dark';
+
+            function updateIcons(isDark) {
+                themeIcons.forEach(icon => {
+                    icon.classList.toggle('fa-moon', !isDark);
+                    icon.classList.toggle('fa-sun', isDark);
+                });
+            }
+
+            function setTheme(isDark) {
+                if(isDark) {
+                    document.documentElement.classList.add(darkClass);
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove(darkClass);
+                    localStorage.setItem('theme', 'light');
+                }
+                updateIcons(isDark);
+            }
+
+            // Initialize theme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                setTheme(true);
+            } else {
+                setTheme(false);
+            }
+
+            themeToggleButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const isDark = document.documentElement.classList.contains(darkClass);
+                    setTheme(!isDark);
+                });
+            });
+        })();
+
+        // Cart count update from localStorage
+        function updateCartCount() {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            let count = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            document.getElementById('cartCount').textContent = count;
+            document.getElementById('cartCountMobile').textContent = count;
         }
-        updateIcons(isDark);
-      }
 
-      // Initialize theme
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        setTheme(true);
-      } else {
-        setTheme(false);
-      }
-
-      themeToggleButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const isDark = document.documentElement.classList.contains(darkClass);
-          setTheme(!isDark);
-        });
-      });
-    })();
-
-    // Cart count update from localStorage
-    function updateCartCount() {
-      let cart = JSON.parse(localStorage.getItem('cart')) || [];
-      let count = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
-      document.getElementById('cartCount').textContent = count;
-      document.getElementById('cartCountMobile').textContent = count;
-    }
-
-    updateCartCount();
-
-    // Optionally listen to storage changes to sync cart count across tabs
-    window.addEventListener('storage', (event) => {
-      if (event.key === 'cart') {
         updateCartCount();
-      }
-    });
-  </script>
+
+        // Optionally listen to storage changes to sync cart count across tabs
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'cart') {
+                updateCartCount();
+            }
+        });
+    </script>
 </body>
 </html>

@@ -9,15 +9,51 @@
   <script>
     tailwind.config = { darkMode: 'class' };
   </script>
+  <style>
+    /* Styles for the mobile sidebar */
+    #mobileSidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 250px;
+      height: 100%;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    #mobileSidebar.open {
+      transform: translateX(0);
+    }
+
+    /* Overlay background */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 999;
+    }
+
+    .overlay.active {
+      display: block;
+    }
+  </style>
 </head>
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+
+<!-- Overlay for mobile sidebar -->
+<div class="overlay" id="overlay"></div>
 
 <header class="bg-white dark:bg-gray-800 shadow-md p-4 flex justify-between items-center">
   <a href="{{ url_for('index') }}" class="flex items-center space-x-3">
     <img src="{{ url_for('static', filename='images/ransbet-logo.jpg') }}" alt="Ransbet Logo" class="h-12 w-12 rounded-full border-2 border-red-500 shadow-md" />
     <span class="text-2xl font-bold text-gray-800 dark:text-white">Ransbet</span>
   </a>
-  <nav class="hidden sm:flex items-center space-x-6 text-sm sm:text-base">
+  <nav class="hidden md:flex items-center space-x-6 text-sm sm:text-base">
     <a href="{{ url_for('index') }}" class="text-gray-700 dark:text-gray-300 hover:text-orange-500 flex items-center space-x-2"><i class="fas fa-home"></i><span>Home</span></a>
     <a href="{{ url_for('orders') }}" class="text-orange-500 underline font-semibold flex items-center space-x-2"><i class="fas fa-box"></i><span>Orders</span></a>
     <a href="{{ url_for('cart') }}" class="text-gray-700 dark:text-gray-300 hover:text-orange-500 flex items-center space-x-2"><i class="fas fa-shopping-cart"></i><span>Cart</span></a>
@@ -31,7 +67,27 @@
       </svg>
     </button>
   </nav>
+  <!-- Hamburger Menu for Mobile -->
+  <button id="mobileMenuBtn" class="md:hidden text-gray-700 dark:text-gray-200">
+    <i class="fas fa-bars"></i>
+  </button>
 </header>
+
+<!-- Mobile sidebar menu -->
+<div id="mobileSidebar" class="bg-white dark:bg-gray-800 shadow-lg">
+  <div class="p-4">
+    <button id="closeSidebarBtn" class="text-gray-700 dark:text-gray-200 mb-4">
+      <i class="fas fa-times"></i>
+    </button>
+    <a href="{{ url_for('index') }}" class="block text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 rounded p-2">Home</a>
+    <a href="{{ url_for('orders') }}" class="block text-orange-500 font-semibold dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 rounded p-2">Orders</a>
+    <a href="{{ url_for('cart') }}" class="block text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 rounded p-2">Cart</a>
+    <a href="{{ url_for('logout') }}" class="block text-red-500 hover:bg-red-100 dark:hover:bg-red-600 rounded p-2">Logout</a>
+    <button id="mobileDarkModeToggle" class="block text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 rounded p-2">
+      <i class="fas fa-moon"></i> Dark Mode
+    </button>
+  </div>
+</div>
 
 <main class="p-6 max-w-6xl mx-auto">
   <h2 class="text-3xl font-semibold mb-6">Your Orders</h2>
@@ -44,7 +100,7 @@
           <a href="{{ url_for('order_details', order_id=order[0]) }}"
              class="block text-xl font-semibold hover:text-orange-500">Order #{{ order[0] }}</a>
           <p class="text-gray-600 dark:text-gray-300 mt-1">Date: {{ order[1] }}</p>
-          <p class="text-gray-600 dark:text-gray-300">User: {{ order[2] }}</p>
+          <p class="text-gray-600 dark:text-gray-300">:User  {{ order[2] }}</p>
           <div class="mt-4">
             <a href="{{ url_for('order_details', order_id=order[0]) }}"
                class="text-blue-500 hover:text-blue-700 dark:text-blue-400 font-semibold">View Details</a>
@@ -54,7 +110,6 @@
         class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition duration-300 ease-in-out">
   Cancel Order
 </button>
-
           </div>
         </div>
         {% endfor %}
@@ -116,6 +171,27 @@
       console.error('Error cancelling order:', error);
     });
   }
+
+  // Mobile sidebar functionality
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+  const mobileSidebar = document.getElementById('mobileSidebar');
+  const overlay = document.getElementById('overlay');
+
+  mobileMenuBtn.addEventListener('click', () => {
+    mobileSidebar.classList.add('open');
+    overlay.classList.add('active');
+  });
+
+  closeSidebarBtn.addEventListener('click', () => {
+    mobileSidebar.classList.remove('open');
+    overlay.classList.remove('active');
+  });
+
+  overlay.addEventListener('click', () => {
+    mobileSidebar.classList.remove('open');
+    overlay.classList.remove('active');
+  });
 </script>
 
 </body>

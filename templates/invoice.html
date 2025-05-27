@@ -7,8 +7,44 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { darkMode: 'class' }</script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    /* Styles for the mobile sidebar */
+    #mobileSidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 250px;
+      height: 100%;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    #mobileSidebar.open {
+      transform: translateX(0);
+    }
+
+    /* Overlay background */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 999;
+    }
+
+    .overlay.active {
+      display: block;
+    }
+  </style>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white font-sans transition-colors duration-300">
+
+<!-- Overlay for mobile sidebar -->
+<div class="overlay" id="overlay"></div>
 
 <!-- Navbar -->
 <nav class="bg-white dark:bg-gray-800 shadow-md">
@@ -17,7 +53,7 @@
       <img src="{{ url_for('static', filename='images/ransbet-logo.jpg') }}" alt="Ransbet Logo" class="h-10 w-10 rounded-full border-2 border-red-500 shadow-md" />
       <span class="text-xl font-bold text-gray-800 dark:text-white">Ransbet</span>
     </a>
-    <div class="flex items-center space-x-6">
+    <div class="hidden md:flex items-center space-x-6">
       <a href="{{ url_for('index') }}" class="text-gray-700 dark:text-gray-200 hover:text-orange-500">Home</a>
       <a href="{{ url_for('cart') }}" class="relative flex items-center text-gray-700 dark:text-gray-200 hover:text-orange-500">
         <i class="fas fa-shopping-cart"></i>
@@ -28,8 +64,30 @@
         <i class="fas fa-moon"></i> Dark Mode
       </button>
     </div>
+    <!-- Hamburger Menu for Mobile -->
+    <button id="mobileMenuBtn" class="md:hidden text-gray-700 dark:text-gray-200">
+      <i class="fas fa-bars"></i>
+    </button>
   </div>
 </nav>
+
+<!-- Mobile sidebar menu -->
+<div id="mobileSidebar" class="bg-white dark:bg-gray-800 shadow-lg">
+  <div class="p-4">
+    <button id="closeSidebarBtn" class="text-gray-700 dark:text-gray-200 mb-4">
+      <i class="fas fa-times"></i>
+    </button>
+    <a href="{{ url_for('index') }}" class="block text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 rounded p-2">Home</a>
+    <a href="{{ url_for('cart') }}" class="block text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 rounded p-2">
+      <i class="fas fa-shopping-cart"></i> Cart
+      <span class="cart-count">{{ cart_count }}</span>
+    </a>
+    <a href="{{ url_for('orders') }}" class="block text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 rounded p-2">Orders</a>
+    <button id="mobileDarkModeToggle" class="block text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 rounded p-2">
+      <i class="fas fa-moon"></i> Dark Mode
+    </button>
+  </div>
+</div>
 
 <!-- Download PDF Button -->
 <div class="max-w-3xl mx-auto mt-6 flex justify-end">
@@ -63,7 +121,6 @@
     <p class="text-sm">{{ order.address }}</p>
   </div>
 
-  
   <!-- Items Table -->
   <div class="overflow-x-auto mb-6">
     <table class="min-w-full text-sm text-left">
@@ -107,6 +164,11 @@
 <script>
   const htmlEl = document.documentElement;
   const darkModeToggle = document.getElementById('darkModeToggle');
+  const mobileDarkModeToggle = document.getElementById('mobileDarkModeToggle');
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+  const mobileSidebar = document.getElementById('mobileSidebar');
+  const overlay = document.getElementById('overlay');
 
   function applyTheme(theme) {
     if (theme === 'dark') {
@@ -138,6 +200,28 @@
         applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
       });
     }
+
+    if (mobileDarkModeToggle) {
+      mobileDarkModeToggle.addEventListener('click', () => {
+        const currentTheme = htmlEl.classList.contains('dark') ? 'dark' : 'light';
+        applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+      });
+    }
+
+    mobileMenuBtn.addEventListener('click', () => {
+      mobileSidebar.classList.add('open');
+      overlay.classList.add('active');
+    });
+
+    closeSidebarBtn.addEventListener('click', () => {
+      mobileSidebar.classList.remove('open');
+      overlay.classList.remove('active');
+    });
+
+    overlay.addEventListener('click', () => {
+      mobileSidebar.classList.remove('open');
+      overlay.classList.remove('active');
+    });
   });
 </script>
 

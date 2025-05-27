@@ -9,9 +9,46 @@
     tailwind.config = { darkMode: 'class' };
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    /* Styles for the mobile sidebar */
+    #mobileSidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 250px;
+      height: 100%;
+      background-color: white;
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+
+    #mobileSidebar.open {
+      transform: translateX(0);
+    }
+
+    /* Overlay background */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 999;
+    }
+
+    .overlay.active {
+      display: block;
+    }
+  </style>
 </head>
 
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white transition duration-300">
+
+<!-- Overlay for mobile sidebar -->
+<div class="overlay" id="overlay"></div>
 
 <!-- Navigation Header -->
 <nav class="bg-white dark:bg-gray-800 shadow-md">
@@ -20,7 +57,7 @@
       <img src="{{ url_for('static', filename='images/ransbet-logo.jpg') }}" alt="Ransbet Logo" class="h-10 w-10 rounded-full border-2 border-red-500 shadow-md" />
       <span class="text-xl font-bold text-gray-800 dark:text-white">Ransbet</span>
     </a>
-    <div class="space-x-4 flex items-center">
+    <div class="hidden md:flex space-x-4 items-center">
       <a href="{{ url_for('index') }}" class="text-gray-700 dark:text-gray-200 hover:text-orange-500">Home</a>
       <a href="{{ url_for('cart') }}" class="text-gray-700 dark:text-gray-200 hover:text-orange-500">
         <i class="fas fa-shopping-cart"></i>
@@ -30,18 +67,32 @@
         <i class="fas fa-moon"></i> Dark Mode
       </button>
     </div>
+    <!-- Hamburger Menu for Mobile -->
+    <button id="mobileMenuBtn" class="md:hidden text-gray-700 dark:text-gray-200">
+      <i class="fas fa-bars"></i>
+    </button>
   </div>
 </nav>
 
+<!-- Mobile sidebar menu -->
+<div id="mobileSidebar" class="bg-white dark:bg-gray-800 shadow-lg">
+  <div class="p-4">
+    <button id="closeSidebarBtn" class="text-gray-700 dark:text-gray-200 mb-4">
+      <i class="fas fa-times"></i>
+    </button>
+    <a href="{{ url_for('index') }}" class="block text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 rounded p-2">Home</a>
+    <a href="{{ url_for('cart') }}" class="block text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 rounded p-2">
+      <i class="fas fa-shopping-cart"></i> Cart
+    </a>
+    <a href="{{ url_for('checkout') }}" class="block text-orange-500 font-semibold dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 rounded p-2">Checkout</a>
+    <button id="mobileDarkModeToggle" class="block text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 rounded p-2">
+      <i class="fas fa-moon"></i> Dark Mode
+    </button>
+  </div>
+</div>
+
 <!-- Confirmation Content -->
 <div class="max-w-2xl mx-auto p-6 mt-10 bg-white dark:bg-gray-800 rounded-xl shadow-lg text-center">
-
-  {% if error %}
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
-      <strong class="font-bold">Error: </strong>
-      <span class="block sm:inline">{{ error }}</span>
-    </div>
-  {% endif %}
 
   {% if order %}
     <div class="mb-6">
@@ -86,28 +137,8 @@
 
 </div>
 
-<!-- Flashed Messages -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    <div class="mb-4">
-      {% for category, message in messages %}
-        <div class="p-4 rounded mb-2
-                    {% if category == 'error' %}
-                      bg-red-100 text-red-700 border border-red-300
-                    {% elif category == 'success' %}
-                      bg-green-100 text-green-700 border border-green-300
-                    {% else %}
-                      bg-gray-100 text-gray-700 border border-gray-300
-                    {% endif %}">
-          {{ message }}
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
-{% endwith %}
-
 <!-- Dark Mode & Cart Clear Script -->
- {% if order %}
+{% if order %}
 <script>
   const htmlEl = document.documentElement;
   const darkModeToggle = document.getElementById('darkModeToggle');
@@ -154,6 +185,29 @@
   });
 </script>
 {% endif %}
+
+<!-- Mobile sidebar functionality -->
+<script>
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+  const mobileSidebar = document.getElementById('mobileSidebar');
+  const overlay = document.getElementById('overlay');
+
+  mobileMenuBtn.addEventListener('click', () => {
+    mobileSidebar.classList.add('open');
+    overlay.classList.add('active');
+  });
+
+  closeSidebarBtn.addEventListener('click', () => {
+    mobileSidebar.classList.remove('open');
+    overlay.classList.remove('active');
+  });
+
+  overlay.addEventListener('click', () => {
+    mobileSidebar.classList.remove('open');
+    overlay.classList.remove('active');
+  });
+</script>
 
 </body>
 </html>

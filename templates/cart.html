@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- Viewport meta tag -->
   <title>Ransbet - Cart</title>
 
   <!-- Tailwind CSS CDN -->
@@ -42,60 +43,28 @@
     }
 
     /* Overlay animations */
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
-@keyframes typewriter {
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-  }
-}
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
 
-@keyframes draw {
-  from {
-    stroke-dasharray: 0 100;
-  }
-  to {
-    stroke-dasharray: 100 0;
-  }
-}
+    .animate-spin {
+      animation: spin 1s linear infinite;
+    }
 
-.animate-spin {
-  animation: spin 1s linear infinite;
-}
-
-.animate-typewriter {
-  animation: typewriter 2s steps(30) 1 forwards;
-  white-space: nowrap;
-  overflow: hidden;
-  border-right: 2px solid white;
-}
-
-.animate-draw {
-  stroke-dasharray: 100;
-  stroke-dashoffset: 100;
-  animation: draw 1s ease-out forwards;
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-out;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-out;
+    }
   </style>
 </head>
 
@@ -106,21 +75,6 @@
       <span class="text-xl font-bold text-gray-800 dark:text-white">Ransbet</span>
     </a>
 
-    <!-- Search bar (for all screen sizes) -->
-    <div class="search flex items-center flex-grow max-w-md mx-4">
-      <input
-        type="text"
-        id="searchInput"
-        placeholder="Search products, brands and categories"
-        class="flex-grow border border-gray-300 dark:border-gray-600 px-3 py-2 rounded-l bg-white dark:bg-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-orange-500"
-      />
-      <button
-        id="searchButton"
-        class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-r focus:outline-none focus:ring-2 focus:ring-orange-500"
-      >
-        Search
-      </button>
-    </div>
 
     <!-- Mobile menu toggle button -->
     <button id="menuToggle" class="block lg:hidden text-gray-800 dark:text-gray-100">
@@ -143,17 +97,16 @@
 
       <!-- Account Dropdown (only visible on Desktop) -->
       <div class="relative">
- <a href="{{ url_for('account') }}" class="flex items-center gap-1 hover:text-orange-500">
-  <i class="fas fa-cog"></i> Account
-</a>
-  <div id="accountDropdown" class="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-100 shadow-lg rounded-md hidden">
-    <a href="{{ url_for('orders') }}" class="block px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Orders</a>
-    <a href="#wishlist" class="block px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Wish List</a>
-    <a href="#addresses" class="block px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Addresses</a>
-    <a href="#payments" class="block px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Payment Methods</a>
-  </div>
-</div>
-
+        <a href="{{ url_for('account') }}" class="flex items-center gap-1 hover:text-orange-500">
+          <i class="fas fa-cog"></i> Account
+        </a>
+        <div id="accountDropdown" class="absolute left-0 mt-2 w-48 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-100 shadow-lg rounded-md hidden">
+          <a href="{{ url_for('orders') }}" class="block px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Orders</a>
+          <a href="#wishlist" class="block px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Wish List</a>
+          <a href="#addresses" class="block px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Addresses</a>
+          <a href="#payments" class="block px-4 py-2 text-sm hover:bg-gray-200 dark:hover:bg-gray-600">Payment Methods</a>
+        </div>
+      </div>
 
       <a href="#" class="hover:text-orange-500">Help</a>
 
@@ -172,7 +125,7 @@
   </header>
 
   <!-- Side Navigation (for mobile and tablet) -->
-  <nav id="sideNav" class="lg:hidden fixed inset-0 bg-gray-800 bg-opacity-75 z-40 transform translate-x-full transition-transform duration-300 w-1/2">
+  <nav id="sideNav" class="lg:hidden fixed inset-0 bg-gray-800 z-40 transform translate-x-full transition-transform duration-300 w-1/2">
     <div class="flex justify-end p-4">
       <button id="closeSideNav" class="text-white">
         <i class="fas fa-times"></i>
@@ -180,14 +133,11 @@
     </div>
     <div class="flex flex-col items-center text-white">
       <a href="{{ url_for('index') }}" class="py-4 text-lg hover:text-orange-500">Home</a>
-
-      <!-- Account items listed directly in mobile -->
       <a href="{{ url_for('orders') }}" class="py-4 text-lg hover:text-orange-500">Orders</a>
       <a href="#wishlist" class="py-4 text-lg hover:text-orange-500">Wish List</a>
       <a href="{{ url_for('account') }}" class="py-4 text-lg hover:text-orange-500">Account Settings</a>
       <a href="#addresses" class="py-4 text-lg hover:text-orange-500">Addresses</a>
       <a href="#payments" class="py-4 text-lg hover:text-orange-500">Payment Methods</a>
-
       <a href="#" class="py-4 text-lg hover:text-orange-500">Help</a>
       <a href="{{ url_for('cart') }}" class="relative py-4 text-lg hover:text-orange-500">Cart
         <span class="cart-count" id="cartCountMobile">0</span>
@@ -231,7 +181,7 @@
             <div id="cartTotalPrice" class="text-xl font-bold mb-4">Total: GH₵0.00</div>
             <button
               type="button"
-              class="checkout-btn bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+              class="checkout-btn bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded focus:outline-none focus:ring-2 focus:ring-green-500 transition w-full"
               onclick="handleCheckout()"
             >
               Checkout
@@ -243,147 +193,104 @@
   </main>
 
   <!-- Animated Creative Overlay -->
-<div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 flex items-center justify-center hidden">
-  <div class="text-center text-white space-y-6 animate-fade-in">
-    <div class="relative w-20 h-20 mx-auto">
-      <div class="absolute inset-0 border-4 border-t-transparent border-orange-500 rounded-full animate-spin"></div>
-    </div>
-    <div class="text-2xl font-semibold whitespace-nowrap overflow-hidden border-r-2 border-white animate-typewriter w-72 mx-auto">
-      <span>Processing your order...</span>
-    </div>
-    <div id="checkmarkContainer" class="hidden">
-      <svg class="w-16 h-16 mx-auto text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-        <path class="animate-draw" d="M5 13l4 4L19 7" />
-      </svg>
+  <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+    <div class="text-center text-white space-y-6 animate-fade-in">
+      <div class="relative w-20 h-20 mx-auto">
+        <div class="absolute inset-0 border-4 border-t-transparent border-orange-500 rounded-full animate-spin"></div>
+      </div>
+      <div class="text-2xl font-semibold whitespace-nowrap overflow-hidden border-r-2 border-white animate-typewriter w-72 mx-auto">
+        <span>Processing your order...</span>
+      </div>
+      <div id="checkmarkContainer" class="hidden">
+        <svg class="w-16 h-16 mx-auto text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+          <path class="animate-draw" d="M5 13l4 4L19 7" />
+        </svg>
+      </div>
     </div>
   </div>
-</div>
-
 
   <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    const htmlEl = document.documentElement;
-    const darkModeToggle = document.getElementById('darkModeToggle');
-    const darkModeToggleMobile = document.getElementById('darkModeToggleMobile');
-    const menuToggle = document.getElementById('menuToggle');
-    const sideNav = document.getElementById('sideNav');
-    const closeSideNav = document.getElementById('closeSideNav');
-    const searchInput = document.getElementById('searchInput');
-    const searchButton = document.getElementById('searchButton');
-    const cartCountEl = document.getElementById('cartCount');
-    const cartCountElMobile = document.getElementById('cartCountMobile');
-    const accountDropdown = document.querySelector('.account-dropdown');
+    document.addEventListener('DOMContentLoaded', () => {
+      const htmlEl = document.documentElement;
+      const darkModeToggle = document.getElementById('darkModeToggle');
+      const darkModeToggleMobile = document.getElementById('darkModeToggleMobile');
+      const menuToggle = document.getElementById('menuToggle');
+      const sideNav = document.getElementById('sideNav');
+      const closeSideNav = document.getElementById('closeSideNav');
+      const searchInput = document.getElementById('searchInput');
+      const searchButton = document.getElementById('searchButton');
+      const cartCountEl = document.getElementById('cartCount');
+      const cartCountElMobile = document.getElementById('cartCountMobile');
+      const accountDropdown = document.querySelector('.account-dropdown');
 
-    function showCreativeOverlay() {
-  const overlay = document.getElementById("creativeOverlay");
-  overlay.classList.remove("hidden");
-
-  // Optional: After processing, show checkmark
-  setTimeout(() => {
-    document.getElementById("checkmarkContainer").classList.remove("hidden");
-  }, 3000);
-
-  // Optional redirect after success
-  setTimeout(() => {
-    window.location.href = "{{ url_for('checkout') }}";
-  }, 5000);
-}
-
-    // ✅ FIX: Always get latest cartItems from localStorage
-    function updateCartCount() {
-      const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-      let cartCount = 0;
-      for (const item of cartItems) {
-        cartCount += item.quantity || 1; // Default to 1 if missing
+      // Update cart count from localStorage
+      function updateCartCount() {
+        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        let cartCount = 0;
+        for (const item of cartItems) {
+          cartCount += item.quantity || 1; // Default to 1 if missing
+        }
+        cartCountEl.innerText = cartCount;
+        cartCountElMobile.innerText = cartCount;
       }
-      cartCountEl.innerText = cartCount;
-      cartCountElMobile.innerText = cartCount;
-    }
 
-    // Theme persistence
-    function applyTheme(theme) {
-      if (theme === 'dark') {
-        htmlEl.classList.add('dark');
-        darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
-        darkModeToggleMobile.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+      // Theme persistence
+      function applyTheme(theme) {
+        if (theme === 'dark') {
+          htmlEl.classList.add('dark');
+          darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+          darkModeToggleMobile.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+        } else {
+          htmlEl.classList.remove('dark');
+          darkModeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+          darkModeToggleMobile.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+        }
+        localStorage.setItem('theme', theme);
+      }
+
+      const savedTheme = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+      if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+        applyTheme('dark');
       } else {
-        htmlEl.classList.remove('dark');
-        darkModeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
-        darkModeToggleMobile.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+        applyTheme('light');
       }
-      localStorage.setItem('theme', theme);
+
+      darkModeToggle.addEventListener('click', () => {
+        const currentTheme = htmlEl.classList.contains('dark') ? 'dark' : 'light';
+        applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+      });
+
+      darkModeToggleMobile.addEventListener('click', () => {
+        const currentTheme = htmlEl.classList.contains('dark') ? 'dark' : 'light';
+        applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+      });
+
+      // Mobile menu toggle
+      menuToggle.addEventListener('click', () => {
+        sideNav.classList.add('open');
+      });
+
+      closeSideNav.addEventListener('click', () => {
+        sideNav.classList.remove('open');
+      });
+
+      // Update count on load
+      updateCartCount();
+
+      // Also update count on storage change (if multiple tabs)
+      window.addEventListener('storage', updateCartCount);
+    });
+
+    function handleCheckout() {
+      const overlay = document.getElementById('loadingOverlay');
+      overlay.classList.remove('hidden'); // Show overlay
+      setTimeout(() => {
+        window.location.href = "{{ url_for('checkout') }}";
+      }, 1500);
     }
-
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      applyTheme('dark');
-    } else {
-      applyTheme('light');
-    }
-
-    darkModeToggle.addEventListener('click', () => {
-      const currentTheme = htmlEl.classList.contains('dark') ? 'dark' : 'light';
-      applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
-    });
-
-    darkModeToggleMobile.addEventListener('click', () => {
-      const currentTheme = htmlEl.classList.contains('dark') ? 'dark' : 'light';
-      applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
-    });
-
-    // Mobile menu toggle
-    menuToggle.addEventListener('click', () => {
-      sideNav.classList.add('open');
-    });
-
-    closeSideNav.addEventListener('click', () => {
-      sideNav.classList.remove('open');
-    });
-
-    // Account dropdown toggle
-    const accountToggle = document.getElementById('accountToggle'); // Make sure your button has this ID
-
-if (accountToggle && accountDropdown) {
-  accountToggle.addEventListener('click', (e) => {
-    e.stopPropagation(); // Prevent it from triggering document click
-    accountDropdown.classList.toggle('hidden');
-  });
-
-  // Close dropdown when clicking outside
-  document.addEventListener('click', (e) => {
-    if (!accountToggle.contains(e.target) && !accountDropdown.contains(e.target)) {
-      accountDropdown.classList.add('hidden');
-    }
-  });
-}
-
-
-    // Search functionality
-    searchButton.addEventListener('click', () => {
-      const query = searchInput.value.trim();
-      if (query) {
-        console.log('Searching for:', query);
-        // Add your search logic here
-      }
-    });
-
-    // ✅ Update count on load
-    updateCartCount();
-
-    // ✅ Also update count on storage change (if multiple tabs)
-    window.addEventListener('storage', updateCartCount);
-  });
-
-  function handleCheckout() {
-    const overlay = document.getElementById('loadingOverlay');
-    overlay.classList.remove('hidden'); // Show overlay
-    setTimeout(() => {
-      window.location.href = "{{ url_for('checkout') }}";
-    }, 1500);
-  }
-</script>
+  </script>
 
   <script src="{{ url_for('static', filename='cart.js') }}"></script>
   <script src="{{ url_for('static', filename='script.js') }}"></script>

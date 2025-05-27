@@ -85,15 +85,8 @@ document.addEventListener('DOMContentLoaded', function () {
       region: checkoutForm.shipping_region.value,
       district: checkoutForm.shipping_district.value,
       town: checkoutForm.shipping_town.value,
-      payment_method: document.getElementById('paymentMethod').value
     };
 
-    // Simple validation
-    if (!shippingData.name || !shippingData.phone || !shippingData.address ||
-        !shippingData.region || !shippingData.district || !shippingData.town || !shippingData.payment_method) {
-      alert("Please fill in all required fields including payment method.");
-      return;
-    }
 
     // Submit form to the backend
     checkoutForm.submit();

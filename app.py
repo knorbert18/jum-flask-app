@@ -301,12 +301,18 @@ def verify_payment():
                 delivery_date=datetime.now() + timedelta(days=30)
             )
             db.session.add(new_order)
-            db.session.flush()
+            db.session.flush()  # Get new_order.id before committing
 
             for item in order_info.get('cart', []):
+                product = Product.query.get(item['id'])
+                if not product:
+                    # Skip if product doesn't exist anymore
+                    continue
+
                 order_item = OrderItem(
                     order_id=new_order.id,
-                    product_id=item['id'],
+                    product_id=product.id,
+                    product_name=product.name,  # <-- Add product name here
                     quantity=item['quantity'],
                     price=item['price']
                 )
@@ -314,12 +320,12 @@ def verify_payment():
 
             db.session.commit()
 
-            # After committing the order, clear the cart in the database.
+            # Clear user's cart after order placement
             CartItem.query.filter_by(user_id=current_user.id).delete()
             db.session.commit()
 
             session.pop('pending_order', None)
-            session['cart'] = []  # clear cart in the session as well
+            session['cart'] = []  # Clear cart in session
             cart_count = 0
 
             return render_template('order.html', order={
@@ -435,7 +441,7 @@ def payment_success(order_id):
     db.session.commit()
 
     # Redirect to the invoice page with the updated payment status
-    return redirect(url_for('invoice', order_id=order.id))
+    return redirect(url_for('invoice', order_id=order.order_id))
 
 
 @app.route('/forgot_password', methods=['GET', 'POST'])
@@ -490,12 +496,14 @@ def momo_qr():
 
 from sqlalchemy.orm import aliased
 
+from flask_login import current_user
+
 @app.route('/orders')
 @login_required
 def orders():
     orders = db.session.query(
         Order.order_id, Order.order_date, User.username
-    ).join(User).all()
+    ).join(User).filter(Order.user_id == current_user.id).all()
     return render_template('orders.html', orders=orders)
 
 import logging
@@ -835,7 +843,7 @@ def checkout():
 @app.route('/cancel_order/<int:order_id>', methods=['POST'])
 @login_required
 def cancel_order(order_id):
-    order = Order.query.filter_by(order_id=order_id).first()
+    order = Order.query.filter_by(order_id=order_id, user_id=current_user.id).first()
     if order:
         db.session.delete(order)
         db.session.commit()

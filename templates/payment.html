@@ -8,6 +8,23 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { darkMode: 'class' };</script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <style>
+    /* Side Nav Styles */
+    .side-nav {
+      position: fixed;
+      top: 0;
+      left: -100%;
+      width: 250px;
+      height: 100%;
+      background-color: #ffffff;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+      transition: left 0.3s ease;
+      z-index: 1000; /* Ensure it appears above other content */
+    }
+    .side-nav.open {
+      left: 0;
+    }
+  </style>
 </head>
 
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-white transition duration-300">
@@ -20,7 +37,12 @@
           class="h-10 w-10 rounded-full border-2 border-red-500 shadow-md" />
         <span class="text-xl font-bold text-gray-800 dark:text-white">Ransbet</span>
       </a>
-      <div class="space-x-4 flex items-center">
+      <div class="space-x-4 flex items-center md:hidden">
+        <button id="sideNavToggle" class="text-gray-700 dark:text-gray-200">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+      </div>
+      <div class="space-x-4 hidden md:flex items-center">
         <a href="{{ url_for('index') }}" class="text-gray-700 dark:text-gray-200 hover:text-orange-500">Home</a>
         <a href="{{ url_for('cart') }}" class="text-gray-700 dark:text-gray-200 hover:text-orange-500">
           <i class="fas fa-shopping-cart"></i>
@@ -34,22 +56,40 @@
     </div>
   </nav>
 
+  <!-- Side Navigation -->
+  <div id="sideNav" class="side-nav">
+    <div class="p-4">
+      <button id="closeSideNav" class="text-gray-700 dark:text-gray-200 mb-4">
+        <i class="fas fa-times"></i>
+      </button>
+      <a href="{{ url_for('index') }}" class="block text-gray-700 dark:text-gray-200 hover:text-orange-500 mb-2">Home</a>
+      <a href="{{ url_for('cart') }}" class="block text-gray-700 dark:text-gray-200 hover:text-orange-500 mb-2">
+        <i class="fas fa-shopping-cart"></i> Cart
+      </a>
+      <a href="{{ url_for('checkout') }}" class="block text-orange-500 font-semibold mb-2">Checkout</a>
+      <button id="darkModeToggleSide"
+        class="block w-full text-left px-3 py-1 border rounded text-sm text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-orange-100 dark:hover:bg-gray-700">
+        <i class="fas fa-moon"></i> Dark Mode
+      </button>
+    </div>
+  </div>
+
   <!-- Payment Confirmation Content -->
-  <div class="max-w-2xl mx-auto p-8 mt-10 bg-white dark:bg-gray-800 rounded-xl shadow-lg text-center">
+  <div class="max-w-2xl mx-auto p-6 sm:p-8 mt-10 bg-white dark:bg-gray-800 rounded-xl shadow-lg text-center">
     <div class="mb-8">
-      <h2 class="text-4xl font-semibold text-gray-800 dark:text-white mb-4">Hello {{ name }},</h2>
-      <p class="text-xl text-gray-600 dark:text-gray-300 mb-4">
+      <h2 class="text-3xl sm:text-4xl font-semibold text-gray-800 dark:text-white mb-4">Hello {{ name }},</h2>
+      <p class="text-lg sm:text-xl text-gray-600 dark:text-gray-300 mb-4">
         You're about to make a payment of
-        <strong class="text-3xl text-green-500">₵{{ '%.2f' % total }}</strong> for your order.
+        <strong class="text-2xl sm:text-3xl text-green-500">₵{{ '%.2f' % total }}</strong> for your order.
       </p>
-      <p class="text-lg text-gray-700 dark:text-gray-200 mb-6">
+      <p class="text-md sm:text-lg text-gray-700 dark:text-gray-200 mb-6">
         Please confirm the details below before proceeding to payment.
       </p>
     </div>
 
     <!-- Order Summary -->
     <div class="bg-gray-100 dark:bg-gray-700 p-6 rounded-lg shadow-md mb-6 text-left">
-      <h3 class="text-2xl font-semibold text-gray-800 dark:text-white mb-4">Order Summary</h3>
+      <h3 class="text-xl sm:text-2xl font-semibold text-gray-800 dark:text-white mb-4">Order Summary</h3>
       <p class="text-lg text-gray-700 dark:text-gray-300">
         <strong>Order ID:</strong> <span class="text-gray-800 dark:text-white">JUM{{ order_id }}</span>
       </p>
@@ -60,11 +100,11 @@
 
     <!-- Dynamic Cart Items -->
     <div id="cartSummary" class="mb-6 text-left">
-      <h3 class="text-2xl font-semibold mb-4">Items in Your Order</h3>
+      <h3 class="text-xl sm:text-2xl font-semibold mb-4">Items in Your Order</h3>
       <ul id="cartItemsList" class="space-y-4"></ul>
     </div>
 
-    <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg text-lg w-full mb-8 transition duration-300"
+    <button class="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 sm:px-8 rounded-lg text-lg w-full mb-8 transition duration-300"
       onclick="payWithPaystack()">Pay Now</button>
 
     <div class="text-sm text-gray-600 dark:text-gray-300">
@@ -141,14 +181,21 @@
   <script>
     const htmlEl = document.documentElement;
     const darkModeToggle = document.getElementById('darkModeToggle');
+    const darkModeToggleSide = document.getElementById('darkModeToggleSide');
 
     function applyTheme(theme) {
       if (theme === 'dark') {
         htmlEl.classList.add('dark');
         darkModeToggle.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+        if (darkModeToggleSide) {
+          darkModeToggleSide.innerHTML = '<i class="fas fa-sun"></i> Light Mode';
+        }
       } else {
         htmlEl.classList.remove('dark');
         darkModeToggle.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+        if (darkModeToggleSide) {
+          darkModeToggleSide.innerHTML = '<i class="fas fa-moon"></i> Dark Mode';
+        }
       }
       localStorage.setItem('theme', theme);
     }
@@ -162,6 +209,24 @@
         const current = htmlEl.classList.contains('dark') ? 'dark' : 'light';
         applyTheme(current === 'dark' ? 'light' : 'dark');
       });
+
+      darkModeToggleSide.addEventListener('click', () => {
+        const current = htmlEl.classList.contains('dark') ? 'dark' : 'light';
+        applyTheme(current === 'dark' ? 'light' : 'dark');
+      });
+    });
+
+    // Side Navigation Toggle
+    const sideNav = document.getElementById('sideNav');
+    const sideNavToggle = document.getElementById('sideNavToggle');
+    const closeSideNav = document.getElementById('closeSideNav');
+
+    sideNavToggle.addEventListener('click', () => {
+      sideNav.classList.toggle('open');
+    });
+
+    closeSideNav.addEventListener('click', () => {
+      sideNav.classList.remove('open');
     });
   </script>
 </body>
