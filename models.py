@@ -152,3 +152,18 @@ class CartItem(db.Model):
 
     def __repr__(self):
         return f"<CartItem user_id={self.user_id}, product_id={self.product_id}, qty={self.quantity}>"
+
+class VerificationCode(db.Model):
+    __tablename__ = 'verification_codes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255), nullable=False)
+    code = db.Column(db.String(10), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    expires_at = db.Column(db.DateTime, nullable=False)
+
+    def is_expired(self):
+        return datetime.utcnow() > self.expires_at
+
+    def __repr__(self):
+        return f"<VerificationCode {self.email} - {self.code}>"

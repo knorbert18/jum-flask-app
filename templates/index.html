@@ -86,16 +86,17 @@
     </a>
 
     <!-- Account Dropdown -->
-    <div class="relative hidden sm:block flex-shrink-0">
-      <button id="accountDropdownBtn" class="text-gray-700 dark:text-gray-200 flex items-center gap-2">
-        <i class="fas fa-user-circle text-xl"></i> <span>Account</span>
-      </button>
-      <div id="accountDropdown" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 shadow-lg rounded-lg hidden z-10">
-        <a href="{{ url_for('account') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"><i class="fas fa-cog mr-2"></i>Settings</a>
-        <a href="{{ url_for('orders') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"><i class="fas fa-box mr-2"></i>Orders</a>
-        <a href="{{ url_for('logout') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
-      </div>
-    </div>
+    <!-- Account Dropdown -->
+<div class="relative hidden sm:block flex-shrink-0">
+  <button id="accountDropdownBtn" aria-haspopup="true" aria-expanded="false" class="text-gray-700 dark:text-gray-200 flex items-center gap-2">
+    <i class="fas fa-user-circle text-xl"></i> <span>Account</span>
+  </button>
+  <div id="accountDropdown" role="menu" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 shadow-lg rounded-lg hidden z-10">
+    <a href="{{ url_for('account') }}" role="menuitem" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"><i class="fas fa-cog mr-2"></i>Settings</a>
+    <a href="{{ url_for('orders') }}" role="menuitem" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"><i class="fas fa-box mr-2"></i>Orders</a>
+    <a href="{{ url_for('logout') }}" role="menuitem" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+  </div>
+</div>
 
     <!-- Dark Mode Toggle -->
     <button id="darkModeToggle" class="hidden sm:flex px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-orange-500 items-center gap-2 whitespace-nowrap flex-shrink-0">

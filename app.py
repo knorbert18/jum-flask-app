@@ -4,24 +4,28 @@ import secrets
 import uuid
 from datetime import datetime, timedelta
 from io import BytesIO
-from flask_login import confirm_login
+
 import qrcode
 import requests
 from dotenv import load_dotenv
 from flask import (
-    Flask, request, jsonify, render_template, redirect, url_for, session, flash, current_app, send_file
+    Flask, request, jsonify, render_template, redirect,
+    url_for, session, flash, current_app, send_file
 )
 from flask_cors import CORS
 from flask_login import (
-    LoginManager, login_user, logout_user, current_user, login_required, UserMixin
+    LoginManager, login_user, logout_user, current_user,
+    login_required, UserMixin, confirm_login
 )
 from flask_mail import Mail, Message
 from flask_migrate import Migrate
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
+from itsdangerous import URLSafeTimedSerializer, BadSignature, SignatureExpired
 
-from models import db, User, Product, Order, OrderItem, CartItem, UserSettings
+from models import db, User, VerificationCode, Product, Order, OrderItem, CartItem, UserSettings
 from admin import init_admin
+
 
 load_dotenv()
 
@@ -40,14 +44,13 @@ app.config['SESSION_PERMANENT'] = True
 app.permanent_session_lifetime = timedelta(days=30)
 
 # Mail config
-app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
-app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))
-app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'True') == 'True'
-app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
-app.config['SESSION_COOKIE_HTTPONLY'] = True  # Duplicate but safe to keep
-app.config['SESSION_PERMANENT'] = True  # Make the session last for the lifetime of the user’s browser
-app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=30)  # Set session expiration time (optional)
+app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')  # smtp.gmail.com
+app.config['MAIL_PORT'] = int(os.getenv('MAIL_PORT', 587))  # 587 is correct for TLS
+app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', 'True') == 'True'  # Should resolve to True
+app.config['MAIL_USE_SSL'] = False  # Correct — SSL is only for port 465
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')  # Your Gmail address
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')  # App password (no spaces)
+app.config['MAIL_DEBUG'] = True  # Helpful for seeing what goes wrong
 
 mail = Mail(app)
 db.init_app(app)
@@ -133,7 +136,7 @@ def check():
 def logout():
     logout_user()
     session.pop('cart', None)
-    print(f"Logged out, session after logout: {session}")  # Debugging session after logout
+    print(f"Logged out, session after logout: {session}")
     return redirect(url_for('index'))
 
 @app.route('/signup', methods=['POST'])
@@ -225,7 +228,7 @@ def payment():
         'phone': phone,
         'address': address,
         'total': total_price,
-        'cart': cart_data  # <--- Add cart items here
+        'cart': cart_data
     }
 
     return render_template(
@@ -301,18 +304,18 @@ def verify_payment():
                 delivery_date=datetime.now() + timedelta(days=30)
             )
             db.session.add(new_order)
-            db.session.flush()  # Get new_order.id before committing
+            db.session.flush()
 
             for item in order_info.get('cart', []):
                 product = Product.query.get(item['id'])
                 if not product:
-                    # Skip if product doesn't exist anymore
+
                     continue
 
                 order_item = OrderItem(
                     order_id=new_order.id,
                     product_id=product.id,
-                    product_name=product.name,  # <-- Add product name here
+                    product_name=product.name,
                     quantity=item['quantity'],
                     price=item['price']
                 )
@@ -325,7 +328,7 @@ def verify_payment():
             db.session.commit()
 
             session.pop('pending_order', None)
-            session['cart'] = []  # Clear cart in session
+            session['cart'] = []
             cart_count = 0
 
             return render_template('order.html', order={
@@ -354,18 +357,18 @@ def process_payment():
     order_id = data.get("order_id") or generate_order_id()
 
     try:
-        # 1. Fetch user's cart items from DB, not from request JSON
+        # Fetch user's cart items from DB, not from request JSON
         cart_items = CartItem.query.filter_by(user_id=current_user.id).all()
         if not cart_items:
             return jsonify({"message": "Your cart is empty."}), 400
 
-        # 2. Calculate total from cart items
+        # Calculate total from cart items
         total = sum(item.product.price * item.quantity for item in cart_items)
         
         order_date = datetime.now()
         delivery_date = (order_date + timedelta(days=5)) if shipping and shipping.get("country", "").lower() == "ghana" else (order_date + timedelta(days=10))
 
-        # 3. Create Order and flush to get order.id
+        # Create Order and flush to get order.id
         order = Order(
             order_id=order_id,
             user_id=current_user.id,
@@ -380,21 +383,21 @@ def process_payment():
             delivery_date=delivery_date
         )
         db.session.add(order)
-        db.session.flush()  # flush to assign order.id
+        db.session.flush()
 
-        # 4. Create OrderItems for each cart item
+        # Create OrderItems for each cart item
         for cart_item in cart_items:
             order_item = OrderItem(
-                order_id=order.id,  # use DB PK here!
+                order_id=order.id,
                 product_id=cart_item.product_id,
                 quantity=cart_item.quantity,
                 price=float(cart_item.product.price)
             )
             db.session.add(order_item)
 
-        db.session.commit()  # commit order and order items
+        db.session.commit()
 
-        # 5. Clear the cart
+        # Clear the cart
         for cart_item in cart_items:
             db.session.delete(cart_item)
 
@@ -428,59 +431,108 @@ def profile():
 @app.route('/payment/success/<int:order_id>', methods=['GET'])
 @login_required
 def payment_success(order_id):
-    # Find the order from the database using the order_id
+    
     order = Order.query.get(order_id)
 
     if not order:
         return jsonify({'success': False, 'message': 'Order not found'}), 404
-
-    # Check if the payment was successful (this depends on your Paystack response)
-    # For simplicity, let's assume payment was successful and set the status to "Paid"
+ 
     order.payment_method = 'Paystack'
-    order.payment_status = 'Paid'  # Ensure you have a 'payment_status' field
+    order.payment_status = 'Paid'
     db.session.commit()
-
-    # Redirect to the invoice page with the updated payment status
+ 
     return redirect(url_for('invoice', order_id=order.order_id))
 
+# Serializer for secure token generation
+serializer = URLSafeTimedSerializer(app.secret_key)
 
+# Store a 6-digit verification code in the database
+def store_verification_code(email, code):
+    expires_at = datetime.utcnow() + timedelta(minutes=10)
+    VerificationCode.query.filter_by(email=email).delete()  # Remove old codes
+    new_code = VerificationCode(email=email, code=code, expires_at=expires_at)
+    db.session.add(new_code)
+    db.session.commit()
+
+# Verify a code (if you want to use it separately)
+def verify_code(email, submitted_code):
+    record = VerificationCode.query.filter_by(email=email, code=submitted_code).first()
+    if record and not record.is_expired():
+        return True
+    return False
+
+# Load user from secure token
+def get_user_by_token(token):
+    try:
+        email = serializer.loads(token, salt='password-reset-salt', max_age=600)
+        return User.query.filter_by(email=email).first()
+    except SignatureExpired:
+        flash('Reset link expired. Please request a new one.', 'warning')
+        return redirect(url_for('forgot_password'))
+    except BadSignature:
+        flash('Invalid reset link.', 'danger')
+        return redirect(url_for('forgot_password'))
+
+
+# Forgot Password Route
 @app.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
         email = request.form.get('email')
         user = User.query.filter_by(email=email).first()
-        if user:
-            token = secrets.token_urlsafe(20)
-            # Store token in DB or cache with expiration, omitted here for brevity
 
+        if user:
+            # Generate a verification code and token
+            verification_code = str(random.randint(100000, 999999))
+            token = serializer.dumps(email)
             reset_url = url_for('reset_password', token=token, _external=True)
-            msg = Message("Password Reset Request",
-                          sender=app.config['MAIL_USERNAME'],
-                          recipients=[email])
-            msg.body = f"To reset your password, visit the following link:\n{reset_url}\nIf you did not request this, please ignore."
+
+            # Store code in database
+            store_verification_code(email, verification_code)
+
+            # Send email with both the code and link
+            msg = Message(
+                "Password Reset Request",
+                sender=app.config['MAIL_USERNAME'],
+                recipients=[email]
+            )
+            msg.body = (
+                f"Your verification code is: {verification_code}\n\n"
+                f"Or click the link to reset your password:\n{reset_url}\n\n"
+                "If you did not request this, please ignore this email."
+            )
             mail.send(msg)
-            flash('Password reset email sent. Please check your inbox.', 'info')
+
+            flash('A password reset link and code have been sent to your email.', 'info')
         else:
-            flash('Email not found.', 'warning')
+            flash('Email address not found.', 'warning')
+
         return redirect(url_for('forgot_password'))
 
     return render_template('forgot_password.html')
 
-
+# Reset Password Route
 @app.route('/reset_password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
-    # Token verification omitted for brevity
+
     if request.method == 'POST':
         password = request.form.get('password')
-        # Find user by token, verify token, omitted here
-        # For demo, assume user is current_user or found by token
-        user = current_user  # Replace with actual lookup
+        confirm_password = request.form.get('confirm_password')
 
-        if password:
+        if password != confirm_password:
+            flash('Passwords do not match.', 'danger')
+            return redirect(url_for('reset_password', token=token))
+
+        user = get_user_by_token(token)
+
+        if user:
             user.password = generate_password_hash(password)
             db.session.commit()
             flash('Password reset successful. You can now log in.', 'success')
             return redirect(url_for('login'))
+        else:
+            flash('Invalid or expired reset link.', 'danger')
+            return redirect(url_for('forgot_password'))
 
     return render_template('reset_password.html', token=token)
 
@@ -517,19 +569,19 @@ from flask import after_this_request
 def invoice(order_id):
     app.logger.debug(f"Requested invoice for order_id: {order_id}")
 
-    # Get the order using the unique external order_id
+
     order = Order.query.filter_by(order_id=order_id, user_id=current_user.id).first()
     if not order:
         flash('Order not found!', 'error')
         return redirect(url_for('orders'))
 
-    # Retrieve order items
+
     order_items = OrderItem.query.filter_by(order_id=order.id).all()
 
-    # === Tax Breakdown Calculation ===
+
     try:
         net_invoice_value = order.total
-        divisor = 1.06 * 1.15  # 6% levies + 15% VAT
+        divisor = 1.06 * 1.15
         basic_amount = round(net_invoice_value / divisor, 2)
 
         covid_levy = round(basic_amount * 0.01, 2)
@@ -544,7 +596,7 @@ def invoice(order_id):
         basic_amount = covid_levy = getfund = nhil = total_with_levies = vat = 0
         net_invoice_value = order.total
 
-    # 🚫 Don't use session['cart'] — your cart is database-driven
+
 
     return render_template(
         'invoice.html',
@@ -584,25 +636,23 @@ def order_details(order_id):
 @app.route('/order/<int:order_id>/invoice')
 @login_required
 def order_invoice(order_id):
-    # Query order by order_id, not id
+    
     order = Order.query.filter_by(order_id=order_id).first_or_404()
 
     user = order.user
 
-    # Fetch order items
+    
     order_items = OrderItem.query.filter_by(order_id=order.id).join(Product).add_columns(
         Product.name, OrderItem.quantity, Product.price).all()
 
     subtotal = sum(item.quantity * float(item.price) for _, item in enumerate(order_items))
-    # but better:
+    
     subtotal = 0
     for oi in order_items:
-        # oi is a tuple (OrderItem, name, quantity, price) depending on query
-        # You might want to unpack carefully, e.g. oi[1], oi[2], oi[3]
-        # Alternatively query like you did earlier with db.session.execute and db.select
+       
         pass
 
-    # Or simpler, fetch product info from each order item
+
     subtotal = 0
     for order_item in order.items:
         subtotal += order_item.quantity * float(order_item.product.price)
@@ -677,7 +727,7 @@ def add_to_cart_route():
 @login_required
 def api_cart():
     if request.method == 'GET':
-        # Return the cart items for the current user
+        
         cart_items = CartItem.query.filter_by(user_id=current_user.id).all()
         cart_data = [{
             'product_id': item.product_id,
@@ -753,19 +803,18 @@ def delete_cart_item():
 
 @app.route('/api/products/seed', methods=['POST'])
 def seed_products():
-    products = request.json  # Expecting a list of product dicts
+    products = request.json
     
     for p in products:
         existing_product = Product.query.get(p['id'])
         if existing_product:
-            continue  # skip if product already exists
+            continue
         
         new_product = Product(
             id=p['id'],
             name=p['name'],
             price=p['price'],
-            image=p.get('image'),  # adjust fields to your model
-            # Add other fields as needed
+            image=p.get('image'),
         )
         db.session.add(new_product)
     
@@ -775,7 +824,7 @@ def seed_products():
 @app.route('/account')
 @login_required
 def account():
-    return render_template('account.html')  # Make sure this template exists
+    return render_template('account.html')
 
 
 @app.route('/checkout', methods=['GET', 'POST'])
@@ -818,7 +867,7 @@ def checkout():
             created_at=datetime.utcnow()
         )
         db.session.add(new_order)
-        db.session.flush()  # Gets new_order.id before commit
+        db.session.flush() 
 
         # Move items from cart to order
         cart_items = CartItem.query.filter_by(user_id=user.id).all()
@@ -836,7 +885,7 @@ def checkout():
         db.session.commit()
 
         flash('Order placed successfully!', 'success')
-        return redirect(url_for('verify_payment'))  # Redirect to verify payment route
+        return redirect(url_for('verify_payment')) 
 
     return render_template('checkout.html')
 
@@ -853,6 +902,6 @@ def cancel_order(order_id):
 
 if __name__ == '__main__':
     with app.app_context():
-        db.create_all()  # Create database tables
+        db.create_all()
     app.run(debug=True)
 
