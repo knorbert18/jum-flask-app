@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- Viewport meta tag -->
   <title>Ransbet - Home</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-..." crossorigin="anonymous" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = { darkMode: 'class' };
@@ -54,7 +54,7 @@
 
 <body class="bg-gray-100 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
   <!-- Header -->
-  <header class="bg-white dark:bg-gray-800 shadow-md px-6 py-6 flex justify-between items-center flex-nowrap gap-4 sm:gap-8 sm:px-10 sm:py-8">
+  <header class="fixed top-0 left-0 w-full z-50 bg-white dark:bg-gray-800 shadow-md px-6 py-6 flex justify-between items-center flex-nowrap gap-4 sm:gap-8 sm:px-10 sm:py-8">
 
     <a href="{{ url_for('index') }}" class="flex items-center space-x-2 flex-shrink-0">
       <img src="{{ url_for('static', filename='images/ransbet-logo.jpg') }}" alt="Ransbet Logo"
@@ -62,10 +62,7 @@
       <span class="text-xl sm:text-2xl font-bold text-gray-800 dark:text-white whitespace-nowrap">Ransbet</span>
     </a>
 
-    <div class="text-gray-800 dark:text-gray-100 text-lg sm:text-2xl font-medium whitespace-normal sm:whitespace-nowrap flex-shrink">
-      <span class="font-semibold">Welcome,</span>
-      <strong class="text-orange-500 ml-1">{{ username }}</strong>
-    </div>
+    
 
     <!-- Search Section -->
     <div class="relative flex items-center gap-2 sm:static flex-shrink-0">
@@ -86,22 +83,22 @@
     </a>
 
     <!-- Account Dropdown -->
-    <!-- Account Dropdown -->
-<div class="relative hidden sm:block flex-shrink-0">
-  <button id="accountDropdownBtn" aria-haspopup="true" aria-expanded="false" class="text-gray-700 dark:text-gray-200 flex items-center gap-2">
-    <i class="fas fa-user-circle text-xl"></i> <span>Account</span>
-  </button>
-  <div id="accountDropdown" role="menu" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 shadow-lg rounded-lg hidden z-10">
-    <a href="{{ url_for('account') }}" role="menuitem" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"><i class="fas fa-cog mr-2"></i>Settings</a>
-    <a href="{{ url_for('orders') }}" role="menuitem" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"><i class="fas fa-box mr-2"></i>Orders</a>
-    <a href="{{ url_for('logout') }}" role="menuitem" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
-  </div>
-</div>
+    <div class="relative hidden sm:block flex-shrink-0">
+      <button id="accountDropdownBtn" class="text-gray-700 dark:text-gray-200 flex items-center gap-2">
+        <i class="fas fa-user-circle text-xl"></i> <span>Account</span>
+      </button>
+      <div id="accountDropdown" class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 shadow-lg rounded-lg hidden z-10">
+        <a href="{{ url_for('account') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"><i class="fas fa-cog mr-2"></i>Settings</a>
+        <a href="{{ url_for('orders') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"><i class="fas fa-box mr-2"></i>Orders</a>
+        <a href="{{ url_for('logout') }}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
+      </div>
+    </div>
 
-    <!-- Dark Mode Toggle -->
-    <button id="darkModeToggle" class="hidden sm:flex px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-orange-500 items-center gap-2 whitespace-nowrap flex-shrink-0">
-      <i class="fas fa-moon"></i> Dark Mode
-    </button>
+    <!-- Dark Mode Toggle (hide on mobile) -->
+<button id="darkModeToggle" class="hidden sm:flex px-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm hover:bg-gray-100 dark:hover:bg-gray-700 transition focus:outline-none focus:ring-2 focus:ring-orange-500 items-center gap-2 whitespace-nowrap flex-shrink-0">
+  <i class="fas fa-moon"></i> Dark Mode
+</button>
+
 
     <!-- Hamburger for Mobile -->
     <button id="mobileMenuBtn" class="sm:hidden text-gray-700 dark:text-gray-200 flex-shrink-0 ml-2">
@@ -127,6 +124,7 @@
           <i class="fas fa-sign-out-alt"></i> Logout
         </a>
 
+
         <!-- Dark Mode Toggle in Mobile Sidebar -->
         <button id="mobileDarkModeToggle" class="flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-orange-100 dark:hover:bg-orange-500 hover:text-orange-600 dark:hover:text-white rounded transition duration-200">
           <i class="fas fa-moon"></i> Dark Mode
@@ -143,42 +141,191 @@
   </header>
 
   <!-- Flash Sales Section -->
-  <section class="relative">
-    <div class="bg-cover bg-center h-96" style="background-image: url('https://via.placeholder.com/1200x400');">
-        <div class="flex items-center justify-center h-full bg-black bg-opacity-50">
-            <div class="text-center text-white">
-                <h1 class="text-4xl font-bold">Discover Your Style</h1>
-                <p class="mt-2">Explore our latest collection of fashion and accessories</p>
-                <a href="#shopByCategory" class="mt-4 inline-block bg-orange-500 text-white px-6 py-2 rounded">Shop Now</a>
-            </div>
-        </div>
+<section class="relative bg-red-600 text-white pt-24 pb-12 px-6 sm:px-12 mt-6">
+  <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+    <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight drop-shadow-lg">Flash Sale</h2>
+    <div id="countdown" class="text-lg sm:text-xl font-semibold bg-red-700 bg-opacity-75 rounded px-4 py-2 shadow-lg">
+      Ends in <span id="timer" class="font-mono">02h:15m:30s</span>
     </div>
+  </div>
+  <div class="mt-6 max-w-7xl mx-auto flex justify-center">
+  <button id="shopNowBtn" class="bg-yellow-400 hover:bg-yellow-500 text-red-900 font-semibold px-6 py-3 rounded-lg shadow-lg transition duration-300 ease-in-out drop-shadow-lg">
+  Shop Now
+</button>
+</div>
 </section>
+
+<!-- Promo Banner Slider -->
+<div class="relative mt-8 max-w-7xl mx-auto rounded-lg overflow-hidden shadow-xl">
+  <div class="relative overflow-hidden">
+    <!-- Carousel track -->
+    <div id="carousel-track" class="flex transition-transform duration-500 ease-in-out" style="transform: translateX(0);">
+      
+      <!-- Carousel Item 1 -->
+      <div class="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/5 h-56 sm:h-64 md:h-80 bg-cover bg-center relative"
+           style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80');">
+        <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <h3 class="text-white text-2xl sm:text-3xl font-bold drop-shadow-lg text-center px-2">Up to 50% Off</h3>
+        </div>
+      </div>
+      
+      <!-- Carousel Item 2 -->
+      <div class="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/5 h-56 sm:h-64 md:h-80 bg-cover bg-center relative"
+           style="background-image: url('https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200&q=80');">
+        <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <h3 class="text-white text-2xl sm:text-3xl font-bold drop-shadow-lg text-center px-2">Free Delivery Today Only</h3>
+        </div>
+      </div>
+      
+      <!-- Carousel Item 3 -->
+      <div class="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/5 h-56 sm:h-64 md:h-80 bg-cover bg-center relative"
+           style="background-image: url('https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=1200&q=80');">
+        <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <h3 class="text-white text-2xl sm:text-3xl font-bold drop-shadow-lg text-center px-2">New Arrivals</h3>
+        </div>
+      </div>
+      
+      <!-- Carousel Item 4 -->
+      <div class="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/5 h-56 sm:h-64 md:h-80 bg-cover bg-center relative"
+           style="background-image: url('https://images.unsplash.com/photo-1491553895911-0055eca6402d?auto=format&fit=crop&w=1200&q=80');">
+        <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <h3 class="text-white text-2xl sm:text-3xl font-bold drop-shadow-lg text-center px-2">Best Sellers</h3>
+        </div>
+      </div>
+      
+      <!-- Carousel Item 5 -->
+      <div class="flex-shrink-0 w-full sm:w-1/2 md:w-1/3 lg:w-1/5 h-56 sm:h-64 md:h-80 bg-cover bg-center relative"
+           style="background-image: url('https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80');">
+        <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <h3 class="text-white text-2xl sm:text-3xl font-bold drop-shadow-lg text-center px-2">Limited Edition</h3>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <!-- Controls -->
+  <button id="prevBtn" aria-label="Previous" 
+          class="absolute top-1/2 left-2 transform -translate-y-1/2 bg-gray-900 bg-opacity-70 hover:bg-opacity-90 text-white p-3 rounded-full shadow-lg transition z-10">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+  </button>
+  
+  <button id="nextBtn" aria-label="Next" 
+          class="absolute top-1/2 right-2 transform -translate-y-1/2 bg-gray-900 bg-opacity-70 hover:bg-opacity-90 text-white p-3 rounded-full shadow-lg transition z-10">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
+  </button>
+</div>
+
+<script>
+  (() => {
+  const track = document.getElementById('carousel-track');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const slides = [...track.children];
+  const totalItems = slides.length;
+
+  let visibleCount = 1;
+
+  function updateVisibleCount() {
+    const width = window.innerWidth;
+    if (width >= 1024) visibleCount = 5;
+    else if (width >= 768) visibleCount = 3;
+    else if (width >= 640) visibleCount = 2;
+    else visibleCount = 1;
+  }
+  updateVisibleCount();
+
+  // Clone first visibleCount slides and append to track
+  for (let i = 0; i < visibleCount; i++) {
+    const clone = slides[i].cloneNode(true);
+    clone.classList.add('clone');
+    track.appendChild(clone);
+  }
+
+  let currentIndex = 0;
+  const slideWidth = slides[0].getBoundingClientRect().width;
+
+  // Update the slide position smoothly
+  function updateCarousel(animate = true) {
+    if (animate) {
+      track.style.transition = 'transform 0.5s ease-in-out';
+    } else {
+      track.style.transition = 'none';
+    }
+    const translateX = -currentIndex * slideWidth;
+    track.style.transform = `translateX(${translateX}px)`;
+  }
+
+  nextBtn.addEventListener('click', () => {
+    if (currentIndex >= totalItems) return; // Prevent going too far
+
+    currentIndex++;
+    updateCarousel();
+
+    // When reaching cloned slides, snap back instantly
+    if (currentIndex === totalItems) {
+      setTimeout(() => {
+        currentIndex = 0;
+        updateCarousel(false);
+      }, 500); // Same duration as CSS transition
+    }
+  });
+
+  prevBtn.addEventListener('click', () => {
+    if (currentIndex <= 0) return; // Prevent going negative
+
+    currentIndex--;
+    updateCarousel();
+  });
+
+  // Auto scroll every 3 seconds
+  setInterval(() => {
+    currentIndex++;
+    updateCarousel();
+
+    if (currentIndex === totalItems) {
+      setTimeout(() => {
+        currentIndex = 0;
+        updateCarousel(false);
+      }, 500);
+    }
+  }, 3000);
+
+  // Adjust visible count on resize (optional)
+  window.addEventListener('resize', () => {
+    updateVisibleCount();
+    // You might want to re-clone slides on resize for perfect behavior
+  });
+})();
+</script>
+
+
 
   <!-- Category Dropdown Filter -->
-  <!-- 🏷️ Shop by Category Section -->
-<section id="shopByCategory" class="p-4">
-  <label for="categorySelect" class="block mb-2 font-semibold text-gray-700 dark:text-gray-200">Filter by Category:</label>
-  <select id="categorySelect" class="category-dropdown px-4 py-2 rounded border dark:bg-gray-700 dark:text-white dark:border-gray-600">
-    <option value="All">All</option>
-    <option value="Men">Men</option>
-    <option value="Ladies">Ladies</option>
-    <option value="Accessories">Accessories</option>
-    <option value="Mobile">Mobile</option>
-    <option value="Children">Children</option>
-    <option value="Jewelries">Jewelries</option>
-    <option value="Electronics">Electronics</option>
-    <option value="Home">Home</option>
-    <option value="Gaming">Gaming</option>
-    <option value="Footwear">Footwear</option>
-    <option value="Sports">Sports</option>
-  </select>
-
-</section>
-
+  <div class="p-4">
+    <label for="categorySelect" class="block mb-2 font-semibold text-gray-700 dark:text-gray-200">Filter by Category:</label>
+    <select id="categorySelect" class="category-dropdown px-4 py-2 rounded border dark:bg-gray-700 dark:text-white dark:border-gray-600">
+      <option value="All">All</option>
+      <option value="Men">Men</option>
+      <option value="Ladies">Ladies</option>
+      <option value="Accessories">Accessories</option>
+      <option value="Mobile">Mobile</option>
+      <option value="Children">Children</option>
+      <option value="Jewelries">Jewelries</option>
+      <option value="Electronics">Electronics</option>
+      <option value="Home">Home</option>
+      <option value="Gaming">Gaming</option>
+      <option value="Footwear">Footwear</option>
+      <option value="Sports">Sports</option>
+    </select>
+  </div>
 
   <!-- Product Grid -->
-  <main class="p-4 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="productContainer"></main>
+  <main class="pt-20 p-4 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="productContainer"></main>
 
   <!-- Theme Toggle Script -->
   <script>
@@ -200,9 +347,14 @@
       localStorage.setItem('theme', theme);
     }
 
-    const savedTheme = localStorage.getItem('theme');
+    let savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    applyTheme(savedTheme === 'dark' || (!savedTheme && prefersDark) ? 'dark' : 'light');
+
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      applyTheme('dark');
+    } else {
+      applyTheme('light');
+    }
 
     darkModeToggle.addEventListener('click', () => {
       const currentTheme = htmlEl.classList.contains('dark') ? 'dark' : 'light';
@@ -258,14 +410,19 @@
       });
     }
 
-    // 🔍 Mobile search toggle
     const mobileSearchBtn = document.getElementById('mobileSearchBtn');
     const mobileSearchForm = document.getElementById('mobileSearchForm');
+
     if (mobileSearchBtn && mobileSearchForm) {
       mobileSearchBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        mobileSearchForm.classList.toggle('hidden');
-        mobileSearchForm.classList.toggle('flex');
+        if (mobileSearchForm.classList.contains('hidden')) {
+          mobileSearchForm.classList.remove('hidden');
+          mobileSearchForm.classList.add('flex');
+        } else {
+          mobileSearchForm.classList.remove('flex');
+          mobileSearchForm.classList.add('hidden');
+        }
       });
 
       document.addEventListener('click', (e) => {
@@ -276,90 +433,165 @@
       });
     }
 
-    // 🧩 Render and filter products
-    function renderProducts(filterCategory = "All") {
-      const products = [
-        { title: 'Wireless Headphones', price: 120, category: 'Electronics', imageUrl: '/static/images/headphones.jpg' },
-        { title: 'Smart Watch', price: 90, category: 'Accessories', imageUrl: '/static/images/smartwatch.jpg' },
-        { title: 'Gaming Mouse', price: 45, category: 'Gaming', imageUrl: '/static/images/mouse.jpg' },
-        { title: 'Bluetooth Speaker', price: 75, category: 'Electronics', imageUrl: '/static/images/speaker.jpg' },
-        { title: 'Men’s Shoes', price: 150, category: 'Men', imageUrl: '/static/images/shoes.jpg' }
-      ];
-
-      const container = document.getElementById("productContainer");
-      container.innerHTML = "";
-
-      const filtered = filterCategory === "All"
-        ? products
-        : products.filter(p => p.category === filterCategory);
-
-      filtered.forEach(product => {
-        const card = document.createElement("div");
-        card.className = "bg-white dark:bg-gray-800 rounded-lg shadow p-4";
-        card.innerHTML = `
-          <div class="relative w-full h-48 shimmer rounded mb-3 overflow-hidden">
-            <img 
-              data-src="${product.imageUrl}" 
-              alt="${product.title}" 
-              class="absolute inset-0 w-full h-full object-cover fade-in opacity-0 transition-opacity duration-700"
-            />
-          </div>
-          <h3 class="text-lg font-semibold">${product.title}</h3>
-          <p class="text-orange-600 font-bold">GH₵ ${product.price}</p>
-          `;
-
-        container.appendChild(card);
-      });
-
-      // Lazy-load images with fade-in
-      setTimeout(() => {
-        const images = document.querySelectorAll("img[data-src]");
-        images.forEach(img => {
-          const realSrc = img.getAttribute("data-src");
-          img.setAttribute("src", realSrc);
-
-          if (img.complete) {
-            img.classList.add("loaded");
-          } else {
-            img.onload = () => img.classList.add("loaded");
-          }
-        });
-      }, 2000); // ✅ <-- this was missing (delay and semicolon)
+    // 🧩 Product rendering with shimmer effect
+    function renderProducts() {
+  const products = [
+    {
+      title: 'Wireless Headphones',
+      price: 120,
+      imageUrl: '/static/images/headphones.jpg',
+      category: 'Electronics'
+    },
+    {
+      title: 'Smart Watch',
+      price: 90,
+      imageUrl: '/static/images/smartwatch.jpg',
+      category: 'Electronics'
+    },
+    {
+      title: 'Gaming Mouse',
+      price: 45,
+      imageUrl: '/static/images/mouse.jpg',
+      category: 'Electronics'
+    },
+    {
+      title: 'Bluetooth Speaker',
+      price: 75,
+      imageUrl: '/static/images/speaker.jpg',
+      category: 'Electronics'
+    },
+    {
+      title: 'Gold Necklace',
+      price: 150,
+      imageUrl: '/static/images/jewelry.jpg',
+      category: 'Jewelries'
+    },
+    {
+      title: 'Men’s Jacket',
+      price: 85,
+      imageUrl: '/static/images/jacket.jpg',
+      category: 'Men'
     }
-    // 🛍️ Category Dropdown
-    const categorySelect = document.getElementById('categorySelect');
-    categorySelect.addEventListener('change', () => {
-      const selected = categorySelect.value;
-      renderProducts(selected);
+  ];
+
+  const container = document.getElementById("productContainer");
+  container.innerHTML = "";
+
+  // 🗂 Group products by category
+  const grouped = {};
+  products.forEach(product => {
+    if (!grouped[product.category]) {
+      grouped[product.category] = [];
+    }
+    grouped[product.category].push(product);
+  });
+
+  // 🖼 Render each category section
+  Object.keys(grouped).forEach(category => {
+    const section = document.createElement("section");
+    section.className = "mb-10";
+
+    const header = document.createElement("h2");
+    header.className = "text-2xl font-bold mb-4 text-gray-800 dark:text-white";
+    header.textContent = category;
+    section.appendChild(header);
+
+    const grid = document.createElement("div");
+    grid.className = "grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6";
+
+    grouped[category].forEach(product => {
+      const card = document.createElement("div");
+      card.className = "bg-white dark:bg-gray-800 rounded-lg shadow p-4";
+
+      card.innerHTML = `
+        <div class="relative w-full h-48 shimmer rounded mb-3 overflow-hidden">
+          <img 
+            data-src="${product.imageUrl}" 
+            alt="${product.title}" 
+            class="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-700"
+          />
+        </div>
+        <h3 class="text-lg font-semibold">${product.title}</h3>
+        <p class="text-orange-600 font-bold">GH₵ ${product.price}</p>
+      `;
+
+      grid.appendChild(card);
     });
 
-    // 🛍️ Category Buttons (Shop Now in cards)
-    const categoryButtons = document.querySelectorAll('.shop-category-btn');
-    categoryButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const selectedCategory = btn.dataset.category;
-        categorySelect.value = selectedCategory;
-        renderProducts(selectedCategory);
-        document.getElementById('productContainer').scrollIntoView({ behavior: 'smooth' });
-      });
-    });
+    section.appendChild(grid);
+    container.appendChild(section);
+  });
 
-    // 🔽 Hero "Shop Now" Scroll
-    const heroShopLink = document.querySelector('a[href="#shopByCategory"]');
-    if (heroShopLink) {
-      heroShopLink.addEventListener('click', (e) => {
-        e.preventDefault();
-        document.querySelector('#shopByCategory').scrollIntoView({ behavior: 'smooth' });
-      });
+  const shopNowBtn = document.getElementById('shopNowBtn');
+const productContainer = document.getElementById('productContainer');
+
+if (shopNowBtn && productContainer) {
+  shopNowBtn.addEventListener('click', () => {
+    productContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+}
+
+  // 🖼 Fade-in effect for images
+  const images = document.querySelectorAll("img[data-src]");
+  setTimeout(() => {
+    images.forEach(img => {
+      img.src = img.dataset.src;
+      img.onload = () => {
+        img.classList.remove("opacity-0");
+      };
+    });
+  }, 1000);
+}
+
+
+    // 🕒 Flash Sale Countdown
+    function startFlashSaleCountdown() {
+  const COUNTDOWN_KEY = 'flashSaleEndTime';
+  const timerEl = document.getElementById('timer');
+
+  if (!timerEl) return;
+
+  let endTime = localStorage.getItem(COUNTDOWN_KEY);
+
+  // If no saved end time, set one 24 hours from now
+  if (!endTime) {
+    endTime = new Date().getTime() + 24 * 60 * 60 * 1000;
+    localStorage.setItem(COUNTDOWN_KEY, endTime);
+  } else {
+    endTime = parseInt(endTime, 10);
+  }
+
+  function updateCountdown() {
+    const now = new Date().getTime();
+    const remaining = endTime - now;
+
+    if (remaining <= 0) {
+      timerEl.textContent = '00h:00m:00s';
+      clearInterval(interval);
+      return;
     }
 
-    // ✅ Init
+    const hours = Math.floor((remaining / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((remaining / (1000 * 60)) % 60);
+    const seconds = Math.floor((remaining / 1000) % 60);
+
+    timerEl.textContent = 
+      `${hours.toString().padStart(2, '0')}h:` + 
+      `${minutes.toString().padStart(2, '0')}m:` + 
+      `${seconds.toString().padStart(2, '0')}s`;
+  }
+
+  updateCountdown(); // initial call
+  const interval = setInterval(updateCountdown, 1000);
+}
+
+    // Initialize everything
     setupAccountDropdown();
     setupMobileSidebar();
     renderProducts();
+    startFlashSaleCountdown(); // 👈 Start the Flash Sale countdown
   });
 </script>
-
 
   <!-- JavaScript -->
   <script src="{{ url_for('static', filename='script.js') }}" defer></script>

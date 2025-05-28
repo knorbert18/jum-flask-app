@@ -1,5 +1,5 @@
-  document.addEventListener("DOMContentLoaded", () => {
-     const productsData = [
+document.addEventListener("DOMContentLoaded", () => {
+  const productsData = [
     { id: 1, name: "Ladies Handbag", price: 0.01, image: "static/images/handbag1.jpg", category: "Ladies" },
     { id: 2, name: "Men's Sneakers", price: 300, image: "static/images/mensneakers.jpeg", category: "Men" },
     { id: 3, name: "Kids Backpack", price: 90, image: "static/images/kidsbag.jpeg", category: "Children" },
@@ -39,23 +39,28 @@
     { id: 37, name: "Men’s Cologne", price: 290, image: "static/images/cologne.jpg", category: "Men" },
     { id: 38, name: "Kids Story Book", price: 40, image: "static/images/storybook.jpeg", category: "Children" },
     { id: 39, name: "USB Type-C Cable", price: 50, image: "static/images/usb.jpeg", category: "Mobile" },
-  { id: 40, name: "Gemstone Earrings", price: 680, image: "static/images/gem_earrings.jpeg", category: "Jewelries" },
-  { id: 41, name: "Wireless Game Controller", price: 275, image: "static/images/wireless.jpg", category: "Gaming" },
-  { id: 42, name: "Table Runner", price: 75, image: "static/images/tablerunner.jpg", category: "Home" },
-  { id: 43, name: "Ladies Beanie Hat", price: 60, image: "static/images/beanie.jpeg", category: "Ladies" },
-  { id: 44, name: "Men’s Dress Shirt", price: 200, image: "static/images/shirt.png", category: "Men" },
-  { id: 45, name: "Kids Socks Set", price: 45, image: "static/images/socks.jpg", category: "Children" },
-  { id: 46, name: "Wireless Charger", price: 240, image: "static/images/wireless_charger.png", category: "Mobile" },
-  { id: 47, name: "Jade Bangle", price: 890, image: "static/images/jade_bangle.jpeg", category: "Jewelries" },
-  { id: 48, name: "Bluetooth Mouse", price: 170, image: "static/images/mouse.jpeg", category: "Electronics" },
-  { id: 49, name: "Floor Rug", price: 350, image: "static/images/rug.jpeg", category: "Home" },
-  { id: 50, name: "Fashion Scarf", price: 100, image: "static/images/scarf.jpeg", category: "Accessories" },
-  { id: 51, name: "Slippers", price: 150, image: "static/images/slippers.jpeg", category: "Footwear" },
-  { id: 52, name: "Double Controller", price: 185, image: "static/images/doublecontroller.jpeg", category: "Gaming" },
-  { id: 53, name: "2-in-1 Joypad", price: 105, image: "static/images/2in1.jpeg", category: "Gaming" },
-  { id: 54, name: "Switch Gamepad", price: 688.90, image: "static/images/switch.jpeg", category: "Gaming" },
-  { id: 55, name: "Adidas Predator", price: 150, image: "static/images/adidas_predator.jpeg", category: "Sports" }
-];
+    { id: 40, name: "Gemstone Earrings", price: 680, image: "static/images/gem_earrings.jpeg", category: "Jewelries" },
+    { id: 41, name: "Wireless Game Controller", price: 275, image: "static/images/wireless.jpg", category: "Gaming" },
+    { id: 42, name: "Table Runner", price: 75, image: "static/images/tablerunner.jpg", category: "Home" },
+    { id: 43, name: "Ladies Beanie Hat", price: 60, image: "static/images/beanie.jpeg", category: "Ladies" },
+    { id: 44, name: "Men’s Dress Shirt", price: 200, image: "static/images/shirt.png", category: "Men" },
+    { id: 45, name: "Kids Socks Set", price: 45, image: "static/images/socks.jpg", category: "Children" },
+    { id: 46, name: "Wireless Charger", price: 240, image: "static/images/wireless_charger.png", category: "Mobile" },
+    { id: 47, name: "Jade Bangle", price: 890, image: "static/images/jade_bangle.jpeg", category: "Jewelries" },
+    { id: 48, name: "Bluetooth Mouse", price: 170, image: "static/images/mouse.jpeg", category: "Electronics" },
+    { id: 49, name: "Floor Rug", price: 350, image: "static/images/rug.jpeg", category: "Home" },
+    { id: 50, name: "Fashion Scarf", price: 100, image: "static/images/scarf.jpeg", category: "Accessories" },
+    { id: 51, name: "Slippers", price: 150, image: "static/images/slippers.jpeg", category: "Footwear" },
+    { id: 52, name: "Double Controller", price: 185, image: "static/images/doublecontroller.jpeg", category: "Gaming" },
+    { id: 53, name: "2-in-1 Joypad", price: 105, image: "static/images/2in1.jpeg", category: "Gaming" },
+    { id: 54, name: "Switch Gamepad", price: 688.90, image: "static/images/switch.jpeg", category: "Gaming" },
+    { id: 55, name: "Adidas Predator", price: 150, image: "static/images/adidas_predator.jpeg", category: "Sports" },
+    { id: 56, name: "Wireless Headphones", price: 120, image: "static/images/headphones.jpg", category: "Electronics" },
+    { id: 57, name: "Smart Watch", price: 90, image: "static/images/wallclock.jpg", category: "Accessories" },
+    { id: 58, name: "Gaming Mouse", price: 45, image: "static/images/gamemouse.jpg", category: "Gaming" },
+    { id: 59, name: "Bluetooth Speaker", price: 75, image: "static/images/bluetoothspeaker.jpg", category: "Electronics" },
+    { id: 60, name: "Men’s Shoes", price: 150, image: "static/images/shoes.jpg", category: "Men" }
+  ];
 
   async function seedProducts() {
     try {
@@ -122,8 +127,12 @@
   }
 
   function renderProducts(products) {
+    console.log("Rendering products:", products.length);
     const productContainer = document.getElementById("productContainer");
-    if (!productContainer) return;
+    if (!productContainer) {
+      console.warn("No product container found!");
+      return;
+    }
 
     productContainer.innerHTML = "";
     products.forEach(product => {
@@ -151,71 +160,48 @@
       productContainer.appendChild(card);
     });
 
+    // Add event listeners with validation on productId
     document.querySelectorAll('.add-to-cart-btn').forEach(button => {
       button.addEventListener('click', e => {
         const productId = e.target.getAttribute('data-id');
+        if (!productId || isNaN(productId)) {
+          alert("Invalid product ID");
+          return;
+        }
         addToCart(productId);
       });
     });
   }
 
-  function setupCategoryFilter() {
-    const dropdown = document.getElementById("categorySelect");
-    if (!dropdown) return;
+  const categorySelect = document.getElementById("categorySelect");
+  const searchInput = document.getElementById("searchInput");
 
-    dropdown.addEventListener("change", () => {
-      const category = dropdown.value;
-      if (category === "All") {
-        renderProducts(productsData);
-      } else {
-        const filtered = productsData.filter(p => p.category === category);
-        renderProducts(filtered);
-      }
-    });
+  function filterAndRenderProducts() {
+    if (!categorySelect || !searchInput) {
+      console.warn("Category select or search input missing.");
+      return;
+    }
+    const selectedCategory = categorySelect.value;
+    const searchTerm = searchInput.value.toLowerCase();
+
+    let filteredProducts = productsData;
+
+    if (selectedCategory !== "all") {
+      filteredProducts = filteredProducts.filter(p => p.category.toLowerCase() === selectedCategory.toLowerCase());
+    }
+
+    if (searchTerm) {
+      filteredProducts = filteredProducts.filter(p => p.name.toLowerCase().includes(searchTerm));
+    }
+
+    renderProducts(filteredProducts);
   }
 
-  function setupAccountDropdown() {
-    const btn = document.getElementById("accountDropdownBtn");
-    const dropdown = document.getElementById("accountDropdown");
-    if (!btn || !dropdown) return;
-
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation();
-      dropdown.classList.toggle("hidden");
-    });
-
-    document.addEventListener("click", (e) => {
-      if (!dropdown.classList.contains("hidden") && !dropdown.contains(e.target) && e.target !== btn) {
-        dropdown.classList.add("hidden");
-      }
-    });
-  }
-
-  function searchProducts() {
-    const queryInput = document.getElementById("searchInput");
-    const query = queryInput?.value?.toLowerCase() || "";
-    localStorage.setItem("searchQuery", query);
-    const results = productsData.filter(p => p.name.toLowerCase().includes(query));
-    renderProducts(results);
-  }
-
-  // Initial Load
-  const savedQuery = localStorage.getItem("searchQuery");
-  if (savedQuery) {
-    const input = document.getElementById("searchInput");
-    if (input) input.value = savedQuery;
-    const results = productsData.filter(p => p.name.toLowerCase().includes(savedQuery));
-    renderProducts(results);
-  } else {
-    renderProducts(productsData);
+  if (categorySelect && searchInput) {
+    categorySelect.addEventListener("change", filterAndRenderProducts);
+    searchInput.addEventListener("input", filterAndRenderProducts);
   }
 
   updateCartCount();
-  setupAccountDropdown();
-  setupCategoryFilter();
-
-  const searchInput = document.getElementById("searchInput");
-  if (searchInput) {
-    searchInput.addEventListener("input", searchProducts);
-  }
+  renderProducts(productsData);
 });

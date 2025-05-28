@@ -169,14 +169,16 @@
     localStorage.removeItem('shipping');
 
     // Confirmation message after order
-    const confirmationMessage = document.createElement('div');
-    confirmationMessage.innerHTML = `
-      <div class="bg-green-100 border border-green-400 text-green-700 p-4 rounded mb-6">
-        <strong class="font-bold">Order Successful!</strong>
-        <p>Your order has been placed successfully. You will be redirected to your invoice.</p>
-      </div>
-    `;
-    document.body.insertBefore(confirmationMessage, document.body.firstChild);
+    /*
+const confirmationMessage = document.createElement('div');
+confirmationMessage.innerHTML = `
+  <div class="bg-green-100 border border-green-400 text-green-700 p-4 rounded mb-6">
+    <strong class="font-bold">Order Successful!</strong>
+    <p>Your order has been placed successfully. You will be redirected to your invoice.</p>
+  </div>
+`;
+document.body.insertBefore(confirmationMessage, document.body.firstChild);
+*/
 
     // Redirect to invoice after 3 seconds
     setTimeout(function() {

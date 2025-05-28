@@ -826,6 +826,19 @@ def seed_products():
 def account():
     return render_template('account.html')
 
+@app.route('/api/products', methods=['GET'])
+def get_products():
+    products = Product.query.all()
+    products_list = [
+        {
+            "id": p.id,
+            "name": p.name,
+            "price": p.price,
+            "image": p.image,
+            "category": getattr(p, 'category', '')  # if you store category
+        } for p in products
+    ]
+    return jsonify(products_list)
 
 @app.route('/checkout', methods=['GET', 'POST'])
 @login_required
